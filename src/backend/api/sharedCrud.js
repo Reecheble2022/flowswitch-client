@@ -239,6 +239,8 @@ export const sharedCrudApi = appiiSlice.injectEndpoints({
     itemFieldsUpdater: builder.mutation({
       query: ({ entity, submissionEndpoint, data, guid }) => {
         const url = `/${submissionEndpoint || entity}/${guid}`
+        // console.log("oooooooooo-url = ", url)
+        // console.log("oooooooooo-data = ", data)
         return ({
           url,
           method: "PUT",
@@ -277,6 +279,15 @@ export const sharedCrudApi = appiiSlice.injectEndpoints({
         return { entity, entityGuid: guid, Message: msg, Data: data };
       },
       invalidatesTags: (result, err, { entity }) => [{ type: entity, id: "LIST" }]
+    }),
+
+    //______________________________________________
+    verifyUserLocation: builder.mutation({
+      query: ({ data }) => ({
+        url: '/verify-location',
+        method: 'POST',
+        body: data,
+      }),
     }),
 
     //______________________________________________
@@ -417,6 +428,7 @@ export const {
   useOtpVerifierMutation,
   useOtpSmsSenderMutation,
   useOtpEmailSenderMutation,
+  useVerifyUserLocationMutation,
 } = sharedCrudApi
 
 

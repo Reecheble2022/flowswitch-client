@@ -13,6 +13,8 @@ const ProfilePhotoInput = ({
     maxFileSize = 10,
     acceptedTypes = ['image/*', 'application/pdf', '.doc', '.docx'],
     uploadImmediately = false,
+    hideSelectFileButton,
+    hideUploadIcon,
 }) => {
     const [files, setFiles] = useState([]);
     const [isDragOver, setIsDragOver] = useState(false);
@@ -228,8 +230,11 @@ const ProfilePhotoInput = ({
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
             >
-                <CardContent className="flex flex-col items-center justify-center p-8">
-                    <Upload className={`h-6 w-6 my-4 ${isDragOver ? 'text-blue-500' : 'text-lime-400'}`} />
+                <CardContent className={`flex flex-col items-center justify-center p-8 ${(hideUploadIcon && hideSelectFileButton)?" min-h-[120px]":""}`}>
+                    {!hideUploadIcon &&
+                        <Upload className={`h-6 w-6 my-4 ${isDragOver ? 'text-blue-500' : 'text-lime-400'}`} />
+                    }
+                    
                     <input
                         type="file"
                         accept={acceptedTypes.join(',')}
@@ -241,6 +246,7 @@ const ProfilePhotoInput = ({
                         id="image-input"
                         multiple
                     />
+                    {!hideSelectFileButton &&
                     <Button
                         onClick={() => {
                             document.getElementById('image-input')?.click()
@@ -250,6 +256,7 @@ const ProfilePhotoInput = ({
                     >
                         {uploadButtonLabel}
                     </Button>
+                    }
                 </CardContent>
             </Card>
         </div>
