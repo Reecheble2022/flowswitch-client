@@ -44,18 +44,18 @@ export const UserLocationProvider = ({ children, user }) => {
     });
   };
 
+  const verficationsCount = (user?.agentGuid?.verifications || []).length;
+  const requiredVerifications = 4
   useEffect(() => {
-    if (!user || hasPrompted || !user?.agentGuid || user?.agentGuid?.locationVerified) return;
-
+    if (!user || hasPrompted || !user?.agentGuid || (user?.agentGuid?.locationVerified && (verficationsCount >= requiredVerifications))) return;
     const timer = setTimeout(() => {
-      const verficationsCount = (user?.agentGuid?.verifications || []).length;
-      if (!user?.agentGuid?.locationVerified && verficationsCount) {
+      if (!user?.agentGuid?.locationVerified || (verficationsCount < requiredVerifications)) {
         setShowLocationPrompt(true);
       }
     }, 1 * 60 * 100);
 
     return () => clearTimeout(timer);
-  }, [user, hasPrompted]);
+  }, [user, hasPrompted, verficationsCount]);
 
   const handleConfirmLocation = async () => {
     if (!preview) {
