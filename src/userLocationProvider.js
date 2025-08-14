@@ -48,10 +48,11 @@ export const UserLocationProvider = ({ children, user }) => {
     if (!user || hasPrompted || !user?.agentGuid || user?.agentGuid?.locationVerified) return;
 
     const timer = setTimeout(() => {
-      if (!user?.agentGuid?.locationVerified) {
+      const verficationsCount = (user?.agentGuid?.verifications || []).length;
+      if (!user?.agentGuid?.locationVerified && verficationsCount) {
         setShowLocationPrompt(true);
       }
-    }, 1 * 60 * 100); // 1 minute
+    }, 1 * 60 * 100);
 
     return () => clearTimeout(timer);
   }, [user, hasPrompted]);
