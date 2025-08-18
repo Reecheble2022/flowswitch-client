@@ -9,6 +9,7 @@ import Footer from './components/footer';
 import CompanyLogo from './images/flowswitch-icon.png';
 import { useUserLoginMutation } from './backend/api/sharedCrud';
 import { UserLocationProvider } from './userLocationProvider';
+import { NoteSnapProvider } from './noteSnapProvider';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -93,6 +94,7 @@ const App = () => {
 
   return (
     <UserLocationProvider user={user}>
+    <NoteSnapProvider user={user}>
       <div className="flex flex-col min-h-screen bg-gray-100 relative">
         {!isLoggedIn && (
           <div className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50">
@@ -146,6 +148,7 @@ const App = () => {
         </main>
         <Footer />
       </div>
+      </NoteSnapProvider>
     </UserLocationProvider>
   );
 };
