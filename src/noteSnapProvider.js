@@ -142,36 +142,34 @@ export const NoteSnapProvider = ({ children, user }) => {
   };
 
   const handleConfirmNote = async () => {
-    console.log(">>>>>>>>>> agentUssdCode =", agentUssdCode, " =isAgentValidated =", isAgentValidated)
     if (!currentImage || !agentUssdCode || !isAgentValidated) return;
-    // Upload image
-    const blob = dataURLtoBlob(currentImage);
-    const formData = new FormData();
-    formData.set('file', blob, 'note.jpg');
-    console.log("------>>>>>>>>>>-uploadding------")
-    await uploadImage({ entity: "fileupload", data: formData }).unwrap();
-    // Log to backend (using validated agent details)
-    const retrievedAgentDetails = (arrayWithSingleAgentRecord || [{}])[0];
-    console.log("<>>>>>>>>>>-retrievedAgentDetails =", retrievedAgentDetails)
-    await createNewCashNoteVerification({
-      entity: "cashnoteverification",
-      data: {
-        serialNumber,
-        noteValue,
-        notePhoto: notePhotoUrl,
-        payerEntity: "Agent",
-        payerGuid: retrievedAgentDetails.guid || agentUssdCode,
-        payerId: retrievedAgentDetails.ussdCode || agentUssdCode,
-        verifierEntity: "Agent",
-        verifierGuid: user?.agentGuid?.guid,
-        verifierId: user?.agentGuid?.ussdCode,
-        currency: "USD",
-        amount: noteValue
-      },
-    }).unwrap();
-
-    setNotesToVerify((prev) => [...prev, { serialNumber, noteValue, notePhoto: notePhotoUrl, agentUssdCode }]);
-    resetCurrentNote();
+    try {
+      const blob = dataURLtoBlob(currentImage);
+      const formData = new FormData();
+      formData.set('file', blob, 'note.jpg');
+      await uploadImage({ entity: "fileupload", data: formData }).unwrap();
+      const retrievedAgentDetails = (arrayWithSingleAgentRecord || [{}])[0];
+      await createNewCashNoteVerification({
+        entity: "cashnoteverification",
+        data: {
+          serialNumber,
+          noteValue,
+          notePhoto: notePhotoUrl,
+          payerEntity: "Agent",
+          payerGuid: retrievedAgentDetails.guid || agentUssdCode,
+          payerId: retrievedAgentDetails.ussdCode || agentUssdCode,
+          verifierEntity: "Agent",
+          verifierGuid: user?.agentGuid?.guid,
+          verifierId: user?.agentGuid?.ussdCode,
+          currency: "USD",
+          amount: noteValue
+        },
+      }).unwrap();
+      setNotesToVerify((prev) => [...prev, { serialNumber, noteValue, notePhoto: notePhotoUrl, agentUssdCode }]);
+      resetCurrentNote();
+    } catch(err) {
+      console.log("Error while uploading cash note file =", err)
+    }
   };
 
   const resetCurrentNote = () => {
@@ -262,29 +260,25 @@ export const NoteSnapProvider = ({ children, user }) => {
               </>
             ) : (
               <>
-                <p className="text-gray-600 mb-4">Photograph your notes one at a time, showing the full front with serial number visible.</p>
-                <p className="text-gray-600 mb-4">Agent ID: {agentUssdCode}</p>
-                <p className="text-gray-600 mb-4">FlowSwitch uses NoteSnap to establish digital evidence of cash in-hand.</p>
-                <p className="text-gray-600 mb-4">In the event of fraud or disappearance, this evidence may be shared with legal authorities.</p>
+                <p className="text-gray-600 mb-4">Photograph notes one at a time, showing the full front with serial number visible</p>
+                <p className="text-gray-600 mb-4">Paying agent ID: {agentUssdCode}</p>
 
                 {!currentImage ? (
                   <>
                     <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="w-full max-h-48 object-cover rounded-xl" />
                     <button onClick={captureNote} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-4">
-                      📸 Take Picture of Note
+                      📸 Take {notesToVerify.length?"another":""} picture of note
                     </button>
                   </>
                 ) : (
                   <div>
                     <img src={currentImage} alt="Captured note" className="w-full max-h-48 object-cover rounded-xl border border-lime-400" />
-                    <p>Note Value: {noteValue}</p>
-                    <p>Serial Number: {serialNumber}</p>
                     {ocrLoading ? <p>Processing...</p> : (
                       <>
                         <button onClick={handleConfirmNote} disabled={isLogging || uploadProcessing} className={`bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-4 ${ (isLogging || uploadProcessing) ? 'opacity-60 cursor-not-allowed' : '' }`}>
                           {isLogging ? 'Logging...' : 'Confirm & Log'}
                         </button>
-                        <button onClick={resetCurrentNote} className="bg-gray-600 text-black px-4 py-2 rounded hover:bg-gray-700 mt-2">
+                        <button onClick={resetCurrentNote} className="bg-gray-600 text-black px-4 py-2 rounded hover:bg-gray-700 mt-2 border ml-3">
                           Retake
                         </button>
                       </>
@@ -308,11 +302,12 @@ export const NoteSnapProvider = ({ children, user }) => {
                     Cancel
                   </button>
                   {notesToVerify.length > 0 && (
-                    <button onClick={handleFinishSession} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                      Finish Session ({notesToVerify.length} notes logged)
+                    <button onClick={handleFinishSession} className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-green-700">
+                      Finish Session
                     </button>
                   )}
                 </div>
+                <div className="w-full text-right p-2"> {notesToVerify.length} cash notes captured </div>
               </>
             )}
           </div>

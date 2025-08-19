@@ -15,6 +15,14 @@ const activeChatMessageAdaptor = createEntityAdapter({ selectId: (data) => data.
 const chatGroupAdaptor = createEntityAdapter({ selectId: (data) => data._id })
 const fileuploadAdaptor = createEntityAdapter({ selectId: (data) => data._id })
 const errorAdaptor = createEntityAdapter({ selectId: (data) => data.guid })
+const cashnoteverificationAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
+const agentverificationAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
+const voucherAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
+const floatwalletAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
+const agentmerchanttrustAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
+const roleAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
+const permissionAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
+const userAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
 
 export const mainAdaptors = {
     active_collection: activeCollectionAdapter,
@@ -25,6 +33,14 @@ export const mainAdaptors = {
     activechatmessage: activeChatMessageAdaptor,
     chatgroup: chatGroupAdaptor,
     fileupload: fileuploadAdaptor,
+    cashnoteverification: cashnoteverificationAdaptor,
+    agentverification: agentverificationAdaptor,
+    voucher: voucherAdaptor, 
+    floatwallet: floatwalletAdaptor,
+    agentmerchanttrust: agentmerchanttrustAdaptor,
+    role: roleAdaptor,
+    permission: permissionAdaptor,
+    user: userAdaptor,
     error: errorAdaptor,
 }
 
@@ -37,6 +53,14 @@ export const mainInixoStates = {
     notification: notificationAdaptor.getInitialState(),
     chatgroup: chatGroupAdaptor.getInitialState(),
     fileupload: fileuploadAdaptor.getInitialState(),
+    cashnoteverification: cashnoteverificationAdaptor.getInitialState(),
+    agentverification: agentverificationAdaptor.getInitialState(),
+    voucher: voucherAdaptor.getInitialState(), 
+    floatwallet: floatwalletAdaptor.getInitialState(),
+    agentmerchanttrust: agentmerchanttrustAdaptor.getInitialState(),
+    role: roleAdaptor.getInitialState(),
+    permission: permissionAdaptor.getInitialState(),
+    user: userAdaptor.getInitialState(),
     error: null,
 }
 
