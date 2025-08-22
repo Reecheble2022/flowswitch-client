@@ -41,7 +41,7 @@ export const NoteSnapProvider = ({ children, user }) => {
     isError: uploadFailed,
     error: uploadError,
   }] = useFileUploaderMutation();
-  const { Data: { url: notePhotoUrl } = {} } = uploadResponse || {};
+  const { Data: { url: notePhotoUrl, serialNumber: cashNoteSerialNumber, denomination, currency } = {} } = uploadResponse || {};
 
   // Function to validate agent ID via backend
   const validateAgent = async () => {
@@ -146,26 +146,27 @@ export const NoteSnapProvider = ({ children, user }) => {
     try {
       const blob = dataURLtoBlob(currentImage);
       const formData = new FormData();
-      formData.set('file', blob, 'note.jpg');
+      formData.set('file', blob, 'cashnote.jpg');
+      formData.append("isCashNote", true);
       await uploadImage({ entity: "fileupload", data: formData }).unwrap();
       const retrievedAgentDetails = (arrayWithSingleAgentRecord || [{}])[0];
       await createNewCashNoteVerification({
         entity: "cashnoteverification",
         data: {
-          serialNumber,
-          noteValue,
+          serialNumber: cashNoteSerialNumber,
+          noteValue: denomination,
           notePhoto: notePhotoUrl,
           payerEntity: "Agent",
-          payerGuid: retrievedAgentDetails.guid || agentUssdCode,
-          payerId: retrievedAgentDetails.ussdCode || agentUssdCode,
+          payerGuid: retrievedAgentDetails?.guid || "6889415b6ab4cd35fd1a79e5",
+          payerId: retrievedAgentDetails?.ussdCode || agentUssdCode,
           verifierEntity: "Agent",
-          verifierGuid: user?.agentGuid?.guid,
-          verifierId: user?.agentGuid?.ussdCode,
-          currency: "USD",
+          verifierGuid: user?.agentGuid?.guid || "6889415b6ab4cd35fd1a79e5",
+          verifierId: user?.agentGuid?.ussdCode  || agentUssdCode,
+          currency,
           amount: noteValue
         },
       }).unwrap();
-      setNotesToVerify((prev) => [...prev, { serialNumber, noteValue, notePhoto: notePhotoUrl, agentUssdCode }]);
+      setNotesToVerify((prev) => [...prev, { serialNumber: cashNoteSerialNumber, noteValue, notePhoto: notePhotoUrl, agentUssdCode }]);
       resetCurrentNote();
     } catch(err) {
       console.log("Error while uploading cash note file =", err)
@@ -269,6 +270,9 @@ export const NoteSnapProvider = ({ children, user }) => {
                     <button onClick={captureNote} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-4">
                       📸 Take {notesToVerify.length?"another":""} picture of note
                     </button>
+                    <div className="text-sm">
+                      Last taken: (Serial-number = {cashNoteSerialNumber}, Denomination = {denomination} - {currency})
+                    </div>
                   </>
                 ) : (
                   <div>
@@ -288,12 +292,12 @@ export const NoteSnapProvider = ({ children, user }) => {
 
                 {uploadFailed && (
                   <div className="text-red-600 text-sm mb-4">
-                    {uploadError?.data?.message || 'Failed to upload photo. Please try again.'}
+                    {uploadError?.data?.message || 'Failed read serial number. Please try again'}
                   </div>
                 )}
                 {logError && (
                   <div className="text-red-600 text-sm mb-4">
-                    {logErrorDetails?.data?.message || 'Failed to log note. Please try again.'}
+                    {logErrorDetails?.data?.message || 'Failed to record cash note. Please try again.'}
                   </div>
                 )}
 

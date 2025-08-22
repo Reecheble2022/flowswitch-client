@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import "./index.css";
 import MerchantsRegistrationForm from './components/merchantsRegistrationForm';
+import VerificationsDashboard from './components/verificationsDashboard';
 import AgentRegistrationForm from './components/agentsRegistrationForm';
 import AgentList from "./components/agentsList";
 import MerchantList from "./components/merchantsList";
@@ -15,6 +16,11 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [cards, setCards] = useState({
+    verificationsDashboard: {
+      key: "verificationsDashboard",
+      visible: true,
+      component: VerificationsDashboard
+    },
     merchantRegistrationForm: {
       key: "merchantRegistrationForm",
       visible: false,
@@ -27,7 +33,7 @@ const App = () => {
     },
     agentRegistrationForm: {
       key: "agentRegistrationForm",
-      visible: true,
+      visible: false,
       component: AgentRegistrationForm
     },
     agentListTable: {

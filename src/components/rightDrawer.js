@@ -18,10 +18,11 @@ const RightDrawer = ({ showCard, hideCard, visibleCards, menuOpen, setMenuOpen }
       </div>
       <div className="flex flex-col items-start px-6 space-y-3">
         {[
+          { key: 'verificationsDashboard', label: 'Verifications' },
           // { key: 'merchantRegistrationForm', label: 'Merchant Registration' },
           // { key: 'merchantListTable', label: 'Merchants List' },
-          { key: 'agentRegistrationForm', label: 'Agent Registration' },
           { key: 'agentListTable', label: 'Agents List' },
+          { key: 'agentRegistrationForm', label: 'Agent Registration' },
         ].map(({ key, label }) => (
           <div key={key} className="flex items-center space-x-2 cursor-pointer group">
             <input

@@ -53,9 +53,16 @@ export const UserLocationProvider = ({ children, user }) => {
         setShowLocationPrompt(true);
       }
     }, 1 * 60 * 100);
-
     return () => clearTimeout(timer);
   }, [user, hasPrompted, verficationsCount]);
+
+  const triggerHomeVerificationPrompt = () => {
+    try {
+      setShowLocationPrompt(true);
+    }catch(err){
+      console.log("Eror while defining triggerHomeVerificationPrompt function ->", err)
+    }
+  }
 
   const handleConfirmLocation = async () => {
     if (!preview) {
@@ -143,7 +150,7 @@ export const UserLocationProvider = ({ children, user }) => {
   };
 
   return (
-    <UserLocationContext.Provider value={{ userDetails: user, setUserDetails, isVerifying, isError, error }}>
+    <UserLocationContext.Provider value={{ userDetails: user, setUserDetails, isVerifying, isError, error, triggerHomeVerificationPrompt }}>
       {children}
       {showLocationPrompt && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50">
