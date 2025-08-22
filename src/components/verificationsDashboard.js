@@ -102,7 +102,7 @@ const VerificationsDashboard = () => {
                 (agentList || [])
                   .filter((a) => a.verifications?.length > 0)
                   .map((agent) => (
-                    <tr key={agent.guid || agent._id} className="hover:bg-gray-50">
+                    <tr key={agent?.guid || agent?._id} className="hover:bg-gray-50">
                       <td className="px-1 py-2 border-b text-sm text-gray-900">
                         {agent.name || `${agent.firstName || ''} ${agent.lastName || ''}`.trim() || agent.ussdCode || 'Unknown'}
                       </td>

@@ -150,6 +150,7 @@ export const NoteSnapProvider = ({ children, user }) => {
       formData.append("isCashNote", true);
       await uploadImage({ entity: "fileupload", data: formData }).unwrap();
       const retrievedAgentDetails = (arrayWithSingleAgentRecord || [{}])[0];
+      console.log(">>>>>>>retrievedAgentDetails = ", retrievedAgentDetails)
       await createNewCashNoteVerification({
         entity: "cashnoteverification",
         data: {
