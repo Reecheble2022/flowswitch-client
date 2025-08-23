@@ -18,7 +18,7 @@ const App = () => {
   const [cards, setCards] = useState({
     verificationsDashboard: {
       key: "verificationsDashboard",
-      visible: true,
+      visible: false,
       component: VerificationsDashboard
     },
     merchantRegistrationForm: {
@@ -33,7 +33,7 @@ const App = () => {
     },
     agentRegistrationForm: {
       key: "agentRegistrationForm",
-      visible: false,
+      visible: true,
       component: AgentRegistrationForm
     },
     agentListTable: {
