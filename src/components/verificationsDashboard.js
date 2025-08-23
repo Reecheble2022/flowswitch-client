@@ -82,7 +82,7 @@ const VerificationsDashboard = () => {
                 <th className="px-1 py-2 text-left text-sm font-semibold text-gray-700 border-b">Agent Name</th>
                 <th className="px-1 py-2 text-left text-sm font-semibold text-gray-700 border-b">GPS Coordinates</th>
                 <th className="px-1 py-2 text-left text-sm font-semibold text-gray-700 border-b"> Dates of verification </th>
-                <th className="px-1 py-2 text-left text-sm font-semibold text-gray-700 border-b">Number of Verifications</th>
+                <th className="px-1 py-2 text-left text-sm font-semibold text-gray-700 border-b">Number of prompts</th>
               </tr>
             </thead>
             <tbody>
@@ -129,13 +129,13 @@ const VerificationsDashboard = () => {
           <table className="min-w-full table-auto border-collapse">
             <thead className="bg-gray-200">
               <tr>
+                <th className="px-1 py-3 text-left text-sm font-semibold text-gray-700 border-b">Note Photo</th>
                 <th className="px-1 py-3 text-left text-sm font-semibold text-gray-700 border-b">Serial Number</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 border-b">Amount</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 border-b">Currency</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 border-b">Payer ID</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 border-b">Verifier ID</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 border-b">Note Photo</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 border-b">Verification Date</th>
+                <th className="px-1 py-3 text-left text-sm font-semibold text-gray-700 border-b">Amount</th>
+                <th className="px-1 py-3 text-left text-sm font-semibold text-gray-700 border-b">Currency</th>
+                <th className="px-1 py-3 text-left text-sm font-semibold text-gray-700 border-b">Payer ID</th>
+                <th className="px-1 py-3 text-left text-sm font-semibold text-gray-700 border-b">Verifier ID</th>
+                <th className="px-1 py-3 text-left text-sm font-semibold text-gray-700 border-b">Verification Date</th>
               </tr>
             </thead>
             <tbody>
@@ -154,12 +154,7 @@ const VerificationsDashboard = () => {
               ) : (
                 (cashNotesVerificationsList || []).map((note) => (
                   <tr key={note.guid || note._id || note.serialNumber} className="hover:bg-gray-50">
-                    <td className="px-1 py-4 border-b text-sm text-gray-900">{note.serialNumber || 'N/A'}</td>
-                    <td className="px-6 py-4 border-b text-sm text-gray-900">{note.amount || note.noteValue || 'N/A'}</td>
-                    <td className="px-6 py-4 border-b text-sm text-gray-900">{note.currency || 'N/A'}</td>
-                    <td className="px-6 py-4 border-b text-sm text-gray-900">{note.payerId || note.payerGuid || 'N/A'}</td>
-                    <td className="px-6 py-4 border-b text-sm text-gray-900">{note.verifierId || note.verifierGuid || 'N/A'}</td>
-                    <td className="px-6 py-4 border-b text-sm text-gray-900">
+                    <td className="px-1 py-4 border-b text-sm text-gray-900">
                       {note.notePhoto ? (
                         <img
                           src={note.notePhoto}
@@ -170,7 +165,12 @@ const VerificationsDashboard = () => {
                         'N/A'
                       )}
                     </td>
-                    <td className="px-6 py-4 border-b text-sm text-gray-900">
+                    <td className="px-1 py-4 border-b text-sm text-gray-900">{note.serialNumber || 'N/A'}</td>
+                    <td className="px-1 py-4 border-b text-sm text-gray-900">{note.amount || note.noteValue || 'N/A'}</td>
+                    <td className="px-1 py-4 border-b text-sm text-gray-900">{note.currency || 'N/A'}</td>
+                    <td className="px-1 py-4 border-b text-sm text-gray-900">{note.payerId || note.payerGuid || 'N/A'}</td>
+                    <td className="px-1 py-4 border-b text-sm text-gray-900">{note.verifierId || note.verifierGuid || 'N/A'}</td>
+                    <td className="px-1 py-4 border-b text-sm text-gray-900">
                       {note.createdAt ? new Date(note.createdAt).toLocaleString() : 'N/A'}
                     </td>
                   </tr>

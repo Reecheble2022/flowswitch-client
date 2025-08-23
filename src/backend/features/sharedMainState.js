@@ -13,7 +13,7 @@ const notificationAdaptor = createEntityAdapter({ selectId: (data) => data.guid 
 const messageAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
 const activeChatMessageAdaptor = createEntityAdapter({ selectId: (data) => data.id })
 const chatGroupAdaptor = createEntityAdapter({ selectId: (data) => data._id })
-const fileuploadAdaptor = createEntityAdapter({ selectId: (data) => data._id })
+const fileuploadAdaptor = createEntityAdapter({ selectId: (data) => data._id || data.guid })
 const errorAdaptor = createEntityAdapter({ selectId: (data) => data.guid })
 const cashnoteverificationAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
 const agentverificationAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })

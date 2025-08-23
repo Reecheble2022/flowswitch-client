@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import Tesseract from 'tesseract.js';
 import { useFileUploaderMutation, useItemRegistrerMutation, useItemsListReadrMutation } from './backend/api/sharedCrud';
 import CompanyLogo from './images/flowswitch-icon.png';
 import Webcam from 'react-webcam';
@@ -11,9 +10,6 @@ export const NoteSnapProvider = ({ children, user }) => {
   const [showNotePrompt, setShowNotePrompt] = useState(false);
   const [notesToVerify, setNotesToVerify] = useState([]); // Array for logged notes
   const [currentImage, setCurrentImage] = useState(null);
-  const [serialNumber, setSerialNumber] = useState('');
-  const [noteValue, setNoteValue] = useState('');
-  const [ocrLoading, setOcrLoading] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [agentUssdCode, setAgentUssdCode] = useState(''); // State for agent ID
   const [agentInputError, setAgentInputError] = useState(''); // State for input validation
@@ -29,7 +25,7 @@ export const NoteSnapProvider = ({ children, user }) => {
   const { Data: arrayWithSingleAgentRecord } = agentDetailsResponse || {};
 
   const [createNewCashNoteVerification, { 
-    isLoading: isLogging, 
+    isLoading: newVerificationProcessing, 
     isError: logError, 
     error: logErrorDetails 
   }] = useItemRegistrerMutation();
@@ -43,9 +39,16 @@ export const NoteSnapProvider = ({ children, user }) => {
   }] = useFileUploaderMutation();
   const { Data: { url: notePhotoUrl, serialNumber: cashNoteSerialNumber, denomination, currency } = {} } = uploadResponse || {};
 
+  console.log("iiiiiiiiiiiiiii-notePhotoUrl = ", notePhotoUrl);
+  console.log("iiiiiiiiiiiiiii-cashNoteSerialNumber = ", cashNoteSerialNumber);
+  console.log("iiiiiiiiiiiiiii-denomination = ", denomination);
+  console.log("iiiiiiiiiiiiiii-currency = ", currency);
+  console.log("iiiiiiiiiiiiiii-uploadResponse = ", uploadResponse);
+
   // Function to validate agent ID via backend
   const validateAgent = async () => {
     if (!agentUssdCode || agentUssdCode.length < 1) {
+      setAgentInputError('Please enter a valid Agent ID.');
       setIsAgentValidated(false);
       return false;
     }
@@ -76,11 +79,9 @@ export const NoteSnapProvider = ({ children, user }) => {
     setNotesToVerify([]); // Reset for next session
     setAgentInputError('');
     setCurrentImage(null);
-    setSerialNumber('');
-    setNoteValue('');
     setIsAgentValidated(false);
 
-    if (providedAgentUssdCode && providedAgentUssdCode.length >= 6) {
+    if (providedAgentUssdCode && providedAgentUssdCode.length >= 1) {
       setAgentUssdCode(providedAgentUssdCode);
       const isValid = await validateAgent();
       if (isValid) {
@@ -92,7 +93,7 @@ export const NoteSnapProvider = ({ children, user }) => {
       setAgentUssdCode(''); // Reset agent ID
       setIsCameraOpen(false); // Show input prompt
       if (providedAgentUssdCode) {
-        setAgentInputError('Provided Agent ID is invalid (minimum 6 characters).');
+        setAgentInputError('Provided Agent ID is invalid.');
       }
     }
   };
@@ -121,36 +122,42 @@ export const NoteSnapProvider = ({ children, user }) => {
   const captureNote = () => {
     const image = webcamRef.current.getScreenshot();
     setCurrentImage(image);
-    processOCR(image);
-  };
-
-  const processOCR = async (image) => {
-    setOcrLoading(true);
-    try {
-      const { data: { text } } = await Tesseract.recognize(image, 'eng');
-      // Extract serial: Customize regex for your currency (e.g., alphanumeric 10-12 chars)
-      const serialMatch = text.match(/[A-Z0-9]{10,12}/);
-      setSerialNumber(serialMatch ? serialMatch[0] : 'Not detected');
-      
-      // Extract value: Customize for denominations (e.g., '100', '50 USD')
-      const valueMatch = text.match(/\b(100|50|20|10|5|1)\b/);
-      setNoteValue(valueMatch ? `${valueMatch[0]} USD` : 'Not detected'); // Adjust currency
-    } catch (error) {
-      console.error('OCR error:', error);
-    }
-    setOcrLoading(false);
   };
 
   const handleConfirmNote = async () => {
-    if (!currentImage || !agentUssdCode || !isAgentValidated) return;
+    if (!currentImage || !agentUssdCode || !isAgentValidated) {
+      setAgentInputError('Agent ID not validated or image missing.');
+      return;
+    }
     try {
+      // Upload image
       const blob = dataURLtoBlob(currentImage);
       const formData = new FormData();
       formData.set('file', blob, 'cashnote.jpg');
       formData.append("isCashNote", true);
       await uploadImage({ entity: "fileupload", data: formData }).unwrap();
+
+      // Only proceed if uploadResponse contains required fields
+      if (!notePhotoUrl || !cashNoteSerialNumber || !denomination || !currency) {
+        throw new Error('Missing required fields from upload response.');
+      }
+
       const retrievedAgentDetails = (arrayWithSingleAgentRecord || [{}])[0];
-      console.log(">>>>>>>retrievedAgentDetails = ", retrievedAgentDetails)
+      console.log("_____________________________________________");
+      console.log(">>>>>>>retrievedAgentDetails = ", retrievedAgentDetails);
+      console.log(">>>>>>>cashNoteSerialNumber = ", cashNoteSerialNumber);
+      console.log(">>>>>>>user?.agentGuid = ", user?.agentGuid);
+      console.log(">ooooooooooooocashNoteSerialNumber, noteValue, notePhotoUrl, agentUssdCode = ", cashNoteSerialNumber, denomination, notePhotoUrl, agentUssdCode);
+
+      setNotesToVerify((prev) => [...prev, {
+        serialNumber: cashNoteSerialNumber,
+        noteValue: denomination,
+        notePhoto: notePhotoUrl,
+        agentUssdCode,
+        currency
+      }]);
+      setTimeout(() => {}, 500);
+
       await createNewCashNoteVerification({
         entity: "cashnoteverification",
         data: {
@@ -162,22 +169,24 @@ export const NoteSnapProvider = ({ children, user }) => {
           payerId: retrievedAgentDetails?.ussdCode || agentUssdCode,
           verifierEntity: "Agent",
           verifierGuid: user?.agentGuid?.guid || "6889415b6ab4cd35fd1a79e5",
-          verifierId: user?.agentGuid?.ussdCode  || agentUssdCode,
+          verifierId: user?.agentGuid?.ussdCode || agentUssdCode,
           currency,
-          amount: noteValue
+          amount: denomination
         },
       }).unwrap();
-      setNotesToVerify((prev) => [...prev, { serialNumber: cashNoteSerialNumber, noteValue, notePhoto: notePhotoUrl, agentUssdCode }]);
+
+      console.log("====22");
       resetCurrentNote();
-    } catch(err) {
-      console.log("Error while uploading cash note file =", err)
+      console.log("====33");
+      console.log("_______|_________________________________");
+    } catch (err) {
+      console.log("Error while uploading cash note file =", err);
+      setAgentInputError(err?.data?.message || 'Failed to process cash note. Please try again.');
     }
   };
 
   const resetCurrentNote = () => {
     setCurrentImage(null);
-    setSerialNumber('');
-    setNoteValue('');
     setIsCameraOpen(true); // Ready for next note
   };
 
@@ -187,6 +196,7 @@ export const NoteSnapProvider = ({ children, user }) => {
     setAgentUssdCode('');
     setAgentInputError('');
     setIsAgentValidated(false);
+    setCurrentImage(null);
   };
 
   const handleCancel = () => {
@@ -196,6 +206,7 @@ export const NoteSnapProvider = ({ children, user }) => {
     setNotesToVerify([]);
     setAgentInputError('');
     setIsAgentValidated(false);
+    setCurrentImage(null);
   };
 
   // Convert base64 to Blob
@@ -211,7 +222,7 @@ export const NoteSnapProvider = ({ children, user }) => {
   };
 
   return (
-    <NoteSnapContext.Provider value={{ startNoteVerification, userDetails, setUserDetails, isLogging, logError, logErrorDetails }}>
+    <NoteSnapContext.Provider value={{ startNoteVerification, userDetails, setUserDetails, newVerificationProcessing, logError, logErrorDetails }}>
       {children}
       {showNotePrompt && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50">
@@ -264,24 +275,35 @@ export const NoteSnapProvider = ({ children, user }) => {
               <>
                 <p className="text-gray-600 mb-4">Photograph notes one at a time, showing the full front with serial number visible</p>
                 <p className="text-gray-600 mb-4">Paying agent ID: {agentUssdCode}</p>
-
                 {!currentImage ? (
                   <>
                     <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="w-full max-h-48 object-cover rounded-xl" />
                     <button onClick={captureNote} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-4">
-                      📸 Take {notesToVerify.length?"another":""} picture of note
+                      📸 Take {notesToVerify.length ? "another" : ""} picture of note
                     </button>
-                    <div className="text-sm">
-                      Last taken: (Serial-number = {cashNoteSerialNumber}, Denomination = {denomination} - {currency})
-                    </div>
+                    {notesToVerify.length > 0 && (
+                      <div className="text-sm mt-2">
+                        Last taken: (Serial-number = {notesToVerify[notesToVerify.length - 1].serialNumber}, Denomination = {notesToVerify[notesToVerify.length - 1].noteValue} - {notesToVerify[notesToVerify.length - 1].currency || 'Unknown'})
+                      </div>
+                    )}
                   </>
                 ) : (
                   <div>
                     <img src={currentImage} alt="Captured note" className="w-full max-h-48 object-cover rounded-xl border border-lime-400" />
-                    {ocrLoading ? <p>Processing...</p> : (
+                    {uploadProcessing ? <p>Processing...</p> : (
                       <>
-                        <button onClick={handleConfirmNote} disabled={isLogging || uploadProcessing} className={`bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-4 ${ (isLogging || uploadProcessing) ? 'opacity-60 cursor-not-allowed' : '' }`}>
-                          {isLogging ? 'Logging...' : 'Confirm & Log'}
+                        {uploadSucceeded && (
+                          <>
+                            <p>Serial Number: {cashNoteSerialNumber || 'Not detected'}</p>
+                            <p>Denomination: {denomination || 'Not detected'} {currency || ''}</p>
+                          </>
+                        )}
+                        <button
+                          onClick={handleConfirmNote}
+                          disabled={uploadProcessing || newVerificationProcessing}
+                          className={`bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-4 ${ (uploadProcessing || newVerificationProcessing) ? 'opacity-60 cursor-not-allowed' : '' }`}
+                        >
+                          {uploadProcessing || newVerificationProcessing ? 'Please wait...' : 'Verify cash note'}
                         </button>
                         <button onClick={resetCurrentNote} className="bg-gray-600 text-black px-4 py-2 rounded hover:bg-gray-700 mt-2 border ml-3">
                           Retake
@@ -293,7 +315,7 @@ export const NoteSnapProvider = ({ children, user }) => {
 
                 {uploadFailed && (
                   <div className="text-red-600 text-sm mb-4">
-                    {uploadError?.data?.message || 'Failed read serial number. Please try again'}
+                    {uploadError?.data?.message || 'Failed to read serial number. Please try again.'}
                   </div>
                 )}
                 {logError && (
