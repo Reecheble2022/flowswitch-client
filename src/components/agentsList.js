@@ -26,6 +26,7 @@ const AgentList = () => {
     const containerRef = useRef(null);
     const lastScrollTop = useRef(0);
     const componentRef = useRef();
+    const [activeAgentsTypeFilter, setActiveAgentsTypeFilter] = useState("sales")
 
     // Build query filters
     const filters = useMemo(() => {
@@ -421,7 +422,7 @@ const AgentList = () => {
 
         return (
             <>
-                <div className="bg-gray-50 px-3 py-4 rounded-b-md max-w-300">
+                <div className="bg-gray-50 px-3 py-4 rounded-b-md max-w-full">
                     <div className="flex items-center gap-4 mb-4">
                         <img src={agent.photo?.url ? `${agent.photo?.url}` : DEFAULT_AVATAR2} alt="Av" className="w-16 h-16 rounded-xl" />
                         <div className="ml-auto flex gap-2">
@@ -468,7 +469,7 @@ const AgentList = () => {
     };
 
     return (
-        <div className="w-full p-6 bg-white rounded-xl shadow-lg md:max-w-[500px]">
+        <div className="w-full p-6 bg-white rounded-xl shadow-lg">
             <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800 no-print">Agents List</h2>
 
             <div className="space-y-4 mb-4 no-print">
@@ -521,23 +522,40 @@ const AgentList = () => {
                 </div>
             </div>
 
-            <div className="flex justify-end gap-2 mt-8">
-                <button onClick={(e) => {
-                        setExpandedId(null);
-                        setPrintableDetailsElement("to-be-printed");
-                        setPrintableListElement("printable-list");
-                        setTimeout(() => handlePrintList(e), 200);
-                    }}
-                    className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 transition mb-3"
-                >
-                    🖨️ Print List
-                </button>
-                <button
-                    onClick={handleExportToExcel}
-                    className="bg-green-600 text-white text-sm px-4 py-2 rounded hover:bg-green-700 transition mb-3"
-                >
-                    📊 Export to Excel
-                </button>
+            <div className="flex justify-between gap-2 mt-8">
+                <div className="flex justify-start gap-2">
+                    <button 
+                        onClick={()=>setActiveAgentsTypeFilter("sales")}
+                        className={`${activeAgentsTypeFilter === "sales"? "bg-blue-400 text-white" : "border text-black"} text-sm px-4 py-2 rounded hover:bg-blue-600 hover:text-white transition mb-3`}
+                    >
+                        Sales agents
+                    </button>
+                    <button
+                        onClick={()=>setActiveAgentsTypeFilter("float")}
+                        className={`${activeAgentsTypeFilter === "float"? "bg-blue-400 text-white" : "border text-black"} text-sm px-4 py-2 rounded hover:bg-blue-600 hover:text-white transition mb-3`}
+                    >
+                        Float Agents
+                    </button>
+                </div>
+                <div className="flex justify-end gap-2">
+                    <button 
+                        onClick={(e) => {
+                            setExpandedId(null);
+                            setPrintableDetailsElement("to-be-printed");
+                            setPrintableListElement("printable-list");
+                            setTimeout(() => handlePrintList(e), 200);
+                        }}
+                        className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 transition mb-3"
+                    >
+                        🖨️ Print List
+                    </button>
+                    <button
+                        onClick={handleExportToExcel}
+                        className="bg-green-600 text-white text-sm px-4 py-2 rounded hover:bg-green-700 transition mb-3"
+                    >
+                        📊 Export to Excel
+                    </button>
+                </div>
             </div>
 
             <div className="overflow-x-auto border border-gray-200 rounded-md max-h-[140vh]">
@@ -554,7 +572,7 @@ const AgentList = () => {
                             <b> {selectedMerchantName} - (chunk {page})</b>
                         </div>
                     </div>
-                    <table className="min-w-[500px] table-auto">
+                    <table className="min-w-full table-auto">
                         <thead className="top-0 bg-zinc-200">
                             <tr>
                                 <th className="text-left p-1 border-b border-gray-600 font-medium text-gray-700">Photo</th>

@@ -5,7 +5,7 @@ const RightDrawer = ({ showCard, hideCard, visibleCards, menuOpen, setMenuOpen }
 
   return (
     <div
-      className={`fixed top-0 right-0 h-full min-w-160 bg-white text-black z-50
+      className={`fixed top-0 right-0 h-full min-w-160 bg-white text-black z-100
       transform transition-transform duration-300 ease-in-out
       shadow-[inset_10px_0_10px_-10px_rgba(0,0,0,0.2)]
       ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
@@ -18,11 +18,11 @@ const RightDrawer = ({ showCard, hideCard, visibleCards, menuOpen, setMenuOpen }
       </div>
       <div className="flex flex-col items-start px-6 space-y-3">
         {[
-          { key: 'verificationsDashboard', label: 'Verifications' },
+          // { key: 'verificationsDashboard', label: 'Verifications' },
           // { key: 'merchantRegistrationForm', label: 'Merchant Registration' },
           // { key: 'merchantListTable', label: 'Merchants List' },
           { key: 'agentListTable', label: 'Agents List' },
-          { key: 'agentRegistrationForm', label: 'Agent Registration' },
+          // { key: 'agentRegistrationForm', label: 'Agent Registration' },
         ].map(({ key, label }) => (
           <div key={key} className="flex items-center space-x-2 cursor-pointer group">
             <input

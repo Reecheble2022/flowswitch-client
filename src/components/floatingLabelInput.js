@@ -18,8 +18,8 @@ const FloatingLabelInput = ({ label, name, type = "text", required = false, mult
                             props.onChange(e)
                         }
                     }}
-                    rows={4}
-                    className="peer w-full text-gray-900 border border-zinc-400 mt-2 placeholder-transparent focus:outline-none focus:border-blue-600 py-2 pl-3 resize-none bg-zinc-100 rounded-xl"
+                    rows={props.rows || 4}
+                    className="peer w-full text-gray-900 border border-zinc-400 mt-2 placeholder-transparent focus:outline-none focus:border-blue-600 py-2 pl-3 resize-none bg-zinc-100 rounded-xl z-1 relative"
                     placeholder={label}
                 />
             ) : (

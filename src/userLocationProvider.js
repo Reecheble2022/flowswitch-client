@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { useItemFieldsUpdaterMutation, useFileUploaderMutation } from './backend/api/sharedCrud';
+import { useItemFieldsUpdaterMutation, useFileUploaderMutation, useItemRegistrerMutation } from './backend/api/sharedCrud';
 import CompanyLogo from './images/flowswitch-icon.png';
 import locationPin from './images/flowswitch-homebase-prompt-icon-light.png';
 import ProfileImageInput from './components/profilePhotoInput';

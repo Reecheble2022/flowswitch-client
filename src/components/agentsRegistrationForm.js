@@ -6,7 +6,7 @@ import { selectList } from '../backend/features/sharedMainState';
 import ProfileImageInput from './profilePhotoInput';
 import DocumentsInput from './documentsInput';
 
-const AgentsRegistrationForm = () => {
+const AgentsRegistrationForm = ({ formLabel }) => {
     const [status, setStatus] = useState("");
     const [loading, setLoading] = useState(false);
     const [preview, setPreview] = useState(null);
@@ -196,142 +196,149 @@ const AgentsRegistrationForm = () => {
     //============= /end submit to Cloud Run =================
 
     return (
-        <div className="max-w-lg p-6 bg-white rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800"> Register new Agent </h2>
-            <div className="space-y-4">
-                <div>
-                    <FloatingLabelInput
-                        label="First name"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <FloatingLabelInput
-                        label="Last name"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">Category</label>
-                    <select
-                        name="category"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                        required
-                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-lime-500 focus:border-lime-500 p-2 pl-1"
-                    >
-                        <option value="">--</option>
-                        <option value="Male">Individuals</option>
-                        <option value="Female">Salons</option>
-                        <option value="Male">Shops</option>
-                        <option value="Female">Market venders</option>
-                        <option value="Female">Momo agents</option>
-                        <option value="Female">Street hauckers</option>
-                    </select>
-                </div>
-                <div>
-                    <FloatingLabelInput
-                        label="Email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                    />
-                </div>
-                <div>
-                    <FloatingLabelInput
-                        label="Phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                    />
-                </div>
-                <div>
-                    <FloatingLabelInput
-                        label="Physical address"
-                        name="physicalAddress"
-                        value={formData.physicalAddress}
-                        onChange={handleInputChange}
-                    />
-                </div>
-                <div>
-                    <FloatingLabelInput
-                        label="Nationality"
-                        name="nationality"
-                        value={formData.nationality}
-                        onChange={handleInputChange}
-                    />
-                </div>
-                <div>
-                    <FloatingLabelInput
-                        label="National ID"
-                        name="nationalId"
-                        value={formData.nationalId}
-                        onChange={handleInputChange}
-                    />
-                </div>
-                <div>
-                    <FloatingLabelInput
-                        label="Primary purpose"
-                        name="primaryPurpose"
-                        value={formData.primaryPurpose}
-                        onChange={handleInputChange}
-                        multiline={true}
-                    />
-                </div>
-
-                <hr />
-
-                {/* Preview Image */}
-                {preview && (
+        <div className={`w-full ${formLabel?"xl:w-[70%]":"xl:max-w-full"} p-6 bg-white rounded-lg shadow-lg`}>
+            <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800"> {formLabel || "Register new Agent"} </h2>
+            
+            <div className="flex flex-col lg:flex-row gap-8 w-full">
+                <div className={`flex-item w-full ${formLabel?"lg:w-[50%]":""} space-y-4`}>
                     <div>
-                        <img
-                            src={preview}
-                            alt="Preview"
-                            className="w-full max-h-48 object-cover rounded-xl border border-lime-400"
+                        <FloatingLabelInput
+                            label="First name"
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={handleInputChange}
+                            required
                         />
                     </div>
-                )}
-
-                <div className="container mx-auto">
-                    <ProfileImageInput
-                        uploadImageFn={({ file, formData }) => handlePhotoChange({ file, formData })}
-                        uploadButtonLabel={photoLabel}
-                        maxFiles={1}
-                        maxFileSize={10}
-                        acceptedTypes={['image/*']}
-                        uploadImmediately={true}
-                    />
+                    <div>
+                        <FloatingLabelInput
+                            label="Last name"
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={handleInputChange}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700">Category</label>
+                        <select
+                            name="category"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            required
+                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-lime-500 focus:border-lime-500 p-2 pl-1"
+                        >
+                            <option value="">--</option>
+                            <option value="Male">Individuals</option>
+                            <option value="Female">Salons</option>
+                            <option value="Male">Shops</option>
+                            <option value="Female">Market venders</option>
+                            <option value="Female">Momo agents</option>
+                            <option value="Female">Street hauckers</option>
+                        </select>
+                    </div>
+                    <div>
+                        <FloatingLabelInput
+                            label="Email"
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                    <div>
+                        <FloatingLabelInput
+                            label="Phone"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                    <div>
+                        <FloatingLabelInput
+                            label="Physical address"
+                            name="physicalAddress"
+                            value={formData.physicalAddress}
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                    <div>
+                        <FloatingLabelInput
+                            label="Nationality"
+                            name="nationality"
+                            value={formData.nationality}
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                    <div>
+                        <FloatingLabelInput
+                            label="National ID"
+                            name="nationalId"
+                            value={formData.nationalId}
+                            onChange={handleInputChange}
+                        />
+                    </div>
                 </div>
 
-                <div className="mx-auto">
-                    <DocumentsInput
-                        uploadDocumentFn={({ file, formData }) => handleDocumentAttachment({ file, formData })}
-                        uploadButtonLabel={documentPickerLabel}
-                        maxFiles={4}
-                        maxFileSize={8}
-                        acceptedDocTypes={['image/*', 'application/pdf', '.doc', '.docx', '.txt']}
-                    />
-                </div>
+                <div className={`flex-item w-full ${formLabel?"lg:w-[50%]":""} space-y-4`}>
+                    <div className="z-2">
+                        <FloatingLabelInput
+                            label="Description"
+                            name="primaryPurpose"
+                            value={formData.primaryPurpose}
+                            onChange={handleInputChange}
+                            multiline={true}
+                            rows={2}
+                        />
+                    </div>
 
-                <div>
-                    <button
-                        onClick={handleSubmitToCloudRun}
-                        type="submit"
-                        disabled={agentRegProcessing || loading}
-                        className={`w-full mt-8 py-2 px-4 rounded-md text-white font-medium ${(agentRegProcessing || loading)
-                            ? 'bg-blue-300 cursor-not-allowed'
-                            : 'bg-blue-600 hover:bg-blue-700'
-                            }`}
-                    >
-                        {(agentRegProcessing || loading) ? 'Submitting...' : 'Submit'}
-                    </button>
+                    <hr />
+
+                    {/* Preview Image */}
+                    {preview && (
+                        <div>
+                            <img
+                                src={preview}
+                                alt="Preview"
+                                className="w-full max-h-48 object-cover rounded-xl border border-lime-400"
+                            />
+                        </div>
+                    )}
+
+                    <div className="container mx-auto">
+                        <ProfileImageInput
+                            uploadImageFn={({ file, formData }) => handlePhotoChange({ file, formData })}
+                            uploadButtonLabel={photoLabel}
+                            maxFiles={1}
+                            maxFileSize={10}
+                            acceptedTypes={['image/*']}
+                            uploadImmediately={true}
+                        />
+                    </div>
+
+                    <div className="mx-auto">
+                        <DocumentsInput
+                            uploadDocumentFn={({ file, formData }) => handleDocumentAttachment({ file, formData })}
+                            uploadButtonLabel={documentPickerLabel}
+                            maxFiles={4}
+                            maxFileSize={8}
+                            acceptedDocTypes={['image/*', 'application/pdf', '.doc', '.docx', '.txt']}
+                        />
+                    </div>
+
+                    <div>
+                        <button
+                            onClick={handleSubmitToCloudRun}
+                            type="submit"
+                            disabled={agentRegProcessing || loading}
+                            className={`w-full mt-8 py-2 px-4 rounded-md text-white font-medium ${(agentRegProcessing || loading)
+                                ? 'bg-blue-300 cursor-not-allowed'
+                                : 'bg-blue-600 hover:bg-blue-700'
+                                }`}
+                        >
+                            {(agentRegProcessing || loading) ? 'Submitting...' : 'Submit'}
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -340,6 +347,7 @@ const AgentsRegistrationForm = () => {
                     {status}
                 </div>
             )}
+
         </div>
     );
 };
