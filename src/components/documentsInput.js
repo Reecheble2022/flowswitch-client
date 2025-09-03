@@ -13,6 +13,7 @@ const DocumentsInput = ({
     maxFileSize = 10,
     acceptedDocTypes = ['image/*', 'application/pdf', '.doc', '.docx'],
     uploadImmediately = false,
+    uploadProcessing,
 }) => {
     const [files, setFiles] = useState([]);
     const [isDragOver, setIsDragOver] = useState(false);
@@ -196,7 +197,7 @@ const DocumentsInput = ({
                                         <p className="text-xs text-gray-500">
                                             {(file.file.size / 1024 / 1024).toFixed(2)} MB
                                         </p>
-                                        {file.status === 'uploading' && (
+                                        {uploadProcessing && (
                                             <Progress value={file.progress} className="mt-2" />
                                         )}
                                         {file.error && (

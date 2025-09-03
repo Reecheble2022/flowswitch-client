@@ -42,7 +42,6 @@ const AgentsRegistrationUpload = ({ }) => {
 
     const handleDocumentAttachment = ({ file, formData }) => {
         if (file) {
-            setDocumentPickerLabel("Add another document");
             const fData = new FormData();
             fData.set('file', file);
             uploadNewDocument({
@@ -50,8 +49,6 @@ const AgentsRegistrationUpload = ({ }) => {
                 submissionEndpoint: "agent/upload",
                 data: fData,
             })
-        } else {
-            setDocumentPickerLabel("Attach document(s)");
         }
     };
 
@@ -68,7 +65,8 @@ const AgentsRegistrationUpload = ({ }) => {
                         uploadButtonLabel={documentPickerLabel}
                         maxFiles={1}
                         maxFileSize={8}
-                        acceptedDocTypes={['image/*', 'application/pdf', '.doc', '.docx', '.txt']}
+                        acceptedDocTypes={['image/*', 'application/pdf', '.doc', '.docx', '.txt', '.xlsx']}
+                        uploadProcessing={docUploadProcessing}
                     />
                 </div>
             </div>
