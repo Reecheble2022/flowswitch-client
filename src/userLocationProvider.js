@@ -15,6 +15,7 @@ export const UserLocationProvider = ({ children, user }) => {
   const [preview, setPreview] = useState(null);
   const [photoLabel, setPhotoLabel] = useState('Take Photo');
   const [isSelfieModalOpen, setIsSelfieModalOpen] = useState(false);
+  const [activeVerificationSchedule, setActiveVerificationSchedule] = useState({})
   const [verifyLocation, { isLoading: isVerifying, isError, error }] = useItemFieldsUpdaterMutation();
   const [uploadNewImage, {
     data: fileUploadSuccessResponse,
@@ -44,13 +45,29 @@ export const UserLocationProvider = ({ children, user }) => {
     });
   };
 
+  const isDateTodayOrEarlier = (dateString) => {
+    const inputDate = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return inputDate instanceof Date && !isNaN(inputDate) && inputDate <= today;
+  };
+  const openScheduledPrompt = (verificationSchedule) => {
+    setActiveVerificationSchedule(verificationSchedule);
+    setShowLocationPrompt(true);
+  }
+  const closeScheduledPrompt = () => {
+    setActiveVerificationSchedule({});
+    setShowLocationPrompt(false);
+  }
   const verficationsCount = (user?.agentGuid?.verifications || []).length;
+  const verficationSchedulesDue = (user?.agentGuid?.verificationSchedules || []).filter(verificationSchedule => (!verificationSchedule.verified && isDateTodayOrEarlier(verificationSchedule.dueDate)));
+  const verficationSchedulesCount = verficationSchedulesDue.length;
   const requiredVerifications = 4
   useEffect(() => {
     if (!user || hasPrompted || !user?.agentGuid || (user?.agentGuid?.locationVerified && (verficationsCount >= requiredVerifications))) return;
     const timer = setTimeout(() => {
-      if (!user?.agentGuid?.locationVerified || (verficationsCount < requiredVerifications)) {
-        setShowLocationPrompt(true);
+      if ((!user?.agentGuid?.locationVerified || (verficationsCount < requiredVerifications)) || verficationSchedulesCount) {
+        openScheduledPrompt(verficationSchedulesDue[0]);
       }
     }, 1 * 60 * 100);
     return () => clearTimeout(timer);
@@ -58,7 +75,9 @@ export const UserLocationProvider = ({ children, user }) => {
 
   const triggerHomeVerificationPrompt = () => {
     try {
-      setShowLocationPrompt(true);
+      if ((!user?.agentGuid?.locationVerified || (verficationsCount < requiredVerifications)) || verficationSchedulesCount) {
+        openScheduledPrompt(verficationSchedulesDue[0]);
+      }
     }catch(err){
       console.log("Eror while defining triggerHomeVerificationPrompt function ->", err)
     }
@@ -70,6 +89,7 @@ export const UserLocationProvider = ({ children, user }) => {
       return;
     }
     try {
+      const { verificationGuid } = activeVerificationSchedule;
       const coords = await getUserLocation();
       await verifyLocation({
         entity: "agent",
@@ -79,6 +99,7 @@ export const UserLocationProvider = ({ children, user }) => {
           longitude: coords.longitude,
           locationPhoto: locationPhotoUploadUrl,
           locationVerified: true,
+          verificationGuid,
         },
       }).unwrap();
       setUserDetails((prev) => ({
@@ -89,7 +110,7 @@ export const UserLocationProvider = ({ children, user }) => {
           homeLocation: coords,
         },
       }));
-      setShowLocationPrompt(false);
+      closeScheduledPrompt();
       setHasPrompted(true);
       setPreview(null);
       setPhotoLabel('Take Photo');
@@ -100,7 +121,7 @@ export const UserLocationProvider = ({ children, user }) => {
   };
 
   const handleCancelLocation = () => {
-    setShowLocationPrompt(false);
+    closeScheduledPrompt();
     setHasPrompted(true);
     setIsStep2(false);
     setPreview(null);

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React from 'react';
-import mahaniLogo from "../images/logo-horiz-transparent.png";
+import aeverLogo from "../images/aever-full-logo.png";
 
 const Footer = () => {
     return (
@@ -11,7 +11,7 @@ const Footer = () => {
                     <p className="flex items-center whitespace-nowrap">
                         Built by <span className="mx-3">|</span>
                         <a href="https://www.mahanitech.com" target="_blank">
-                            <img src={mahaniLogo} alt="Mahani Software engineering" className="h-6 mx-2" />
+                            <img src={aeverLogo} alt="Aever" className="h-6 mx-2" />
                         </a>
                     </p>
                 </div>

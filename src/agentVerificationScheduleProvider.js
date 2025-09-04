@@ -19,19 +19,33 @@ export const AgentVerificationSchedulingProvider = ({ children, merchant }) => {
     setPromptCount(1);
   };
 
+  const addDays = (dateStr, days) => {
+    const date = new Date(dateStr);
+    date.setDate(date.getDate() + days);
+    return date.toISOString().split('T')[0];
+  };
+
   const handleSchedule = async () => {
     if (!target) return;
 
-    let scheduleData = {
-      merchantGuid: merchant?.guid || merchant?._id,
-      agentGuid: target.type === 'one' ? (target.agent?.guid || target.agent?._id) : null,
-      startDate: isOneOff ? new Date().toISOString() : new Date(startDate).toISOString(),
-      intervalDays: isOneOff ? 0 : intervalDays,
-      promptCount: isOneOff ? 1 : promptCount,
-    };
+    const schedules = [];
+    const baseDate = isOneOff ? new Date().toISOString().split('T')[0] : startDate;
+
+    for (let i = 0; i < promptCount; i++) {
+      const dueDate = i === 0 ? baseDate : addDays(baseDate, intervalDays * i);
+      const agents = target.type === 'all' 
+        ? [] 
+        : [{
+            agentGuid: target.agent?.guid || target.agent?._id,
+            agentCode: target.agent?.ussdCode || 'Unknown'
+          }];
+      schedules.push({ dueDate, agents });
+    }
+
+    const data = schedules.length === 1 ? schedules[0] : schedules;
 
     try {
-      await registerSchedule({ entity: 'verificationSchedule', data: scheduleData }).unwrap();
+      await registerSchedule({ entity: 'agentverificationschedule', data }).unwrap();
       setShowSchedulingModal(false);
       resetForm();
       setTarget(null);
