@@ -64,7 +64,7 @@ export const UserLocationProvider = ({ children, user }) => {
   const verficationSchedulesCount = verficationSchedulesDue.length;
   const requiredVerifications = 4
   useEffect(() => {
-    if (!user || hasPrompted || !user?.agentGuid || (user?.agentGuid?.locationVerified && (verficationsCount >= requiredVerifications))) return;
+    if (!user || hasPrompted || !user?.agentGuid) return;
     const timer = setTimeout(() => {
       if ((!user?.agentGuid?.locationVerified || (verficationsCount < requiredVerifications)) || verficationSchedulesCount) {
         openScheduledPrompt(verficationSchedulesDue[0]);
@@ -89,7 +89,7 @@ export const UserLocationProvider = ({ children, user }) => {
       return;
     }
     try {
-      const { verificationGuid } = activeVerificationSchedule;
+      const { guid: verificationScheduleGuid } = activeVerificationSchedule;
       const coords = await getUserLocation();
       await verifyLocation({
         entity: "agent",
@@ -99,7 +99,7 @@ export const UserLocationProvider = ({ children, user }) => {
           longitude: coords.longitude,
           locationPhoto: locationPhotoUploadUrl,
           locationVerified: true,
-          verificationGuid,
+          verificationScheduleGuid,
         },
       }).unwrap();
       setUserDetails((prev) => ({
@@ -179,7 +179,7 @@ export const UserLocationProvider = ({ children, user }) => {
             <img src={CompanyLogo} alt="Company Logo" className="mx-auto mb-4 h-16" />
             {!isStep2 ? (
               <>
-                <h2 className="text-3xl font-semibold mb-4"> Homebase Verification {verficationsCount + 1} </h2>
+                <h2 className="text-3xl font-semibold mb-4"> <a href={user?.agentGuid?.merchantGuid?.website || "#"}>{user?.agentGuid?.merchantGuid?.name}</a> wants to know your home base </h2>
                 <p className="text-gray-600 mb-4">Verify your home location</p>
                 <div className="w-full items-center text-center my-4">
                   <img src={locationPin} className="w-[100px] h-[100px] mx-auto" style={{ alignSelf: 'center' }} />

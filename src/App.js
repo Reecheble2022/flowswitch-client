@@ -150,7 +150,11 @@ const App = () => {
             )}
 
             <Header showCard={showCard} hideCard={hideCard} visibleCards={visibleCards} />
-            {user? 
+            {user?.agentGuid ?
+              <div className="flex bg-lime-100 w-full flex-grow">
+                {/* do nothing, agent should not see anything but just wait for their prompt(s) */}
+              </div>
+              :user ?
               <div className="flex bg-lime-100 min-h-200 w-full flex-grow flex-col xl:flex-row">
                 <VerificationsDashboard className={"w-full xl:w-[60%]"} />
                 <div className="w-full xl:w-[40%] bg-white py-2 px-1">
