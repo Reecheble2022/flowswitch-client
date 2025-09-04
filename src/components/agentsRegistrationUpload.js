@@ -21,19 +21,14 @@ const AgentsRegistrationUpload = ({ }) => {
 
     //------ Excel document --------
     const [uploadNewDocument, {
-        data: docUploadSuccessResponse,
         isLoading: docUploadProcessing,
         isSuccess: docUploadSucceeded,
         isError: docUploadFailed,
         error: docUploadError,
     }] = useFileUploaderMutation()
-    const { Data: { url: docUploadUrl, guid: docUploadGuid } = {} } = docUploadSuccessResponse || {}
     useEffect(() => {
-        if (docUploadSucceeded && (docUploadGuid || docUploadUrl)) {
-            if (!uploadedDocuments.includes(docUploadGuid)) {
-                setUploadedDocuments([...uploadedDocuments, docUploadGuid]);
-                setStatus("✅ Document uploaded");
-            }
+        if (docUploadSucceeded) {
+            setStatus("✅ Document uploaded");
         } else if (docUploadFailed) {
             console.error("Upload error:", docUploadError);
             setStatus("❌ Document upload failed");
@@ -67,6 +62,8 @@ const AgentsRegistrationUpload = ({ }) => {
                         maxFileSize={8}
                         acceptedDocTypes={['image/*', 'application/pdf', '.doc', '.docx', '.txt', '.xlsx', '.xls']}
                         uploadProcessing={docUploadProcessing}
+                        docUploadSucceeded={docUploadSucceeded}
+                        docUploadFailed={docUploadFailed}
                     />
                 </div>
             </div>

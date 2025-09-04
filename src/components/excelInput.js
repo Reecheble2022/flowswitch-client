@@ -14,6 +14,8 @@ const ExcelInput = ({
     acceptedDocTypes = ['image/*', 'application/pdf', '.doc', '.docx', '.xlsx', '.xls'],
     uploadImmediately = false,
     uploadProcessing,
+    docUploadSucceeded,
+    docUploadFailed,
 }) => {
     const [files, setFiles] = useState([]);
     const [isDragOver, setIsDragOver] = useState(false);
@@ -176,7 +178,7 @@ const ExcelInput = ({
                                 <h3 className="text-lg font-medium">[{files.length}]</h3>
                                 <div className="space-x-2">
                                     <Button onClick={uploadAllFiles}
-                                        disabled={files.filter(f => f.status === 'pending').length === 0}
+                                        disabled={uploadProcessing}
                                         className="bg-blue-600 hover:bg-blue-700"
                                     >
                                         Upload files
@@ -197,15 +199,9 @@ const ExcelInput = ({
                                         <p className="text-xs text-gray-500">
                                             {(file.file.size / 1024 / 1024).toFixed(2)} MB
                                         </p>
-                                        {uploadProcessing && (
-                                            <Progress value={file.progress} className="mt-2" />
-                                        )}
-                                        {file.error && (
-                                            <p className="text-xs text-red-500 mt-1">{file.error}</p>
-                                        )}
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        {getStatusIcon(file.status)}
+                                        {getStatusIcon(uploadProcessing? "uploading": docUploadSucceeded ? "success": docUploadFailed ? "error" : "")}
                                         <Button
                                             onClick={() => removeFile(file.id)}
                                             variant="ghost"
