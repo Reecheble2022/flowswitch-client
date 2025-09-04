@@ -139,12 +139,13 @@ const VerificationsDashboard = ({ className }) => {
         {activeTab === 'location' && (
           <div className="bg-white shadow-md">
             <table className="min-w-full border-collapse">
-              <thead className="bg-gray-200">
+              <thead className="bg-zinc-200">
                 <tr>
                   <th className="px-1 py-2 text-left text-sm font-semibold text-gray-700 border-b">Agent Name</th>
                   <th className="px-1 py-2 text-left text-sm font-semibold text-gray-700 border-b">GPS Coordinates</th>
                   <th className="px-1 py-2 text-left text-sm font-semibold text-gray-700 border-b"> Dates of verification </th>
-                  <th className="px-1 py-2 text-left text-sm font-semibold text-gray-700 border-b">Number of prompts</th>
+                  <th className="px-1 py-2 text-left text-sm font-semibold text-gray-700 border-b">Verified prompts</th>
+                  <th className="px-1 py-2 text-left text-sm font-semibold text-gray-700 border-b">pending prompts</th>
                 </tr>
               </thead>
               <tbody>
@@ -154,33 +155,34 @@ const VerificationsDashboard = ({ className }) => {
                       Loading...
                     </td>
                   </tr>
-                ) : (agentList || []).filter((a) => a.verifications?.length > 0).length === 0 ? (
+                ) : (agentList || []).length === 0 ? (
                   <tr>
                     <td colSpan="4" className="px-1 py-2 text-center text-gray-500">
                       No location verifications found.
                     </td>
                   </tr>
                 ) : (
-                  (agentList || [])
-                    .filter((a) => a.verifications?.length > 0)
-                    .map((agent) => (
-                      <tr key={agent?.guid || agent?._id} className="hover:bg-gray-50"
+                  (agentList || []).map((agent) => (
+                      <tr key={agent?.guid || agent?._id} className={`${(selectedAgentToPrompt?.guid === agent?.guid) ? "bg-lime-50":""}`}
                         onClick={() => {
                           setSelectedAgentToPrompt(agent);
                         }}
                       >
-                        <td className="px-1 py-2 border-b text-sm text-gray-900">
+                        <td className={`px-1 py-2 border-b text-sm text-gray-900`}>
                           {agent.name || `${agent.firstName || ''} ${agent.lastName || ''}`.trim() || agent.ussdCode || 'Unknown'}
                         </td>
-                        <td className="px-1 py-2 border-b text-sm text-gray-900">
-                          {agent.verifications?.map((v) => `[${v.latitude.toFixed(6)} : ${v.longitude.toFixed(6)}]`).join(', ') || 'N/A'}
+                        <td className={`px-1 py-2 border-b text-sm text-gray-900`}>
+                          {(agent.verifications || []).map((v) => `[${v.latitude.toFixed(6)} : ${v.longitude.toFixed(6)}] - ${v.locationName || ""}`).join(', ') || '__'}
                         </td>
-                        <td className="px-1 py-2 border-b text-sm text-gray-900">
-                          {agent.verifications
-                            ?.map((v) => new Date(v.date || v.createdAt).toLocaleDateString())
-                            .join(', ') || 'N/A'}
+                        <td className={`px-1 py-2 border-b text-sm text-gray-900`}>
+                          {(agent.verifications || []).map((v) => new Date(v.date || v.createdAt).toLocaleDateString()).join(', ') || '__'}
                         </td>
-                        <td className="px-1 py-2 border-b text-sm text-gray-900">{agent.verifications?.length || 0}</td>
+                        <td className={`px-1 py-2 border-b text-sm text-gray-900`}>
+                          {(agent.verifications || []).length || 0}
+                        </td>
+                        <td className={`px-1 py-2 border-b text-sm text-gray-900`}>
+                          {(agent.verificationSchedules || []).filter(vsch => !vsch.verified).length || 0}
+                        </td>
                       </tr>
                     ))
                 )}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useFileUploaderMutation } from "../backend/api/sharedCrud"
 import { useSelector } from 'react-redux';
 import { selectList } from '../backend/features/sharedMainState';
-import DocumentsInput from './documentsInput';
+import ExcelInput from './excelInput';
 
 const AgentsRegistrationUpload = ({ }) => {
     const [status, setStatus] = useState("");
@@ -60,12 +60,12 @@ const AgentsRegistrationUpload = ({ }) => {
             </p>
             <div className="space-y-4 w-full mt-8">
                 <div className="mx-auto">
-                    <DocumentsInput
+                    <ExcelInput
                         uploadDocumentFn={({ file, formData }) => handleDocumentAttachment({ file, formData })}
                         uploadButtonLabel={documentPickerLabel}
                         maxFiles={1}
                         maxFileSize={8}
-                        acceptedDocTypes={['image/*', 'application/pdf', '.doc', '.docx', '.txt', '.xlsx']}
+                        acceptedDocTypes={['image/*', 'application/pdf', '.doc', '.docx', '.txt', '.xlsx', '.xls']}
                         uploadProcessing={docUploadProcessing}
                     />
                 </div>

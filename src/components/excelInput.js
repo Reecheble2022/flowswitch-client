@@ -6,7 +6,7 @@ import { Progress } from './ui/progress';
 import { useToast } from '../hooks/useToast';
 import FilePreview from './filePreview';
 
-const DocumentsInput = ({
+const ExcelInput = ({
     uploadDocumentFn,
     uploadButtonLabel,
     maxFiles = 10,
@@ -239,12 +239,12 @@ const DocumentsInput = ({
                             uploadAllFiles()
                         }}
                         className="hidden"
-                        id="docs-input"
+                        id="excel-input"
                         multiple
                     />
                     <Button
                         onClick={() => {
-                            document.getElementById('docs-input')?.click()
+                            document.getElementById('excel-input')?.click()
                         }}
                         variant="outline"
                         className="text-blue-600 text-sm font-semibold border border-lime-400"
@@ -257,4 +257,4 @@ const DocumentsInput = ({
     );
 };
 
-export default DocumentsInput;
+export default ExcelInput;

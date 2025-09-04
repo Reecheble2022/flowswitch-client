@@ -26,18 +26,32 @@ export const UserLocationProvider = ({ children, user }) => {
   }] = useFileUploaderMutation();
   const { Data: { url: locationPhotoUploadUrl, guid } = {} } = fileUploadSuccessResponse || {};
 
-  // Function to get GPS coordinates
   const getUserLocation = () => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
         reject(new Error('Geolocation is not supported by this browser.'));
       }
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`);
+            const data = await response.json();
+            const locationName = data.display_name || 'Unknown location';
+            resolve({
+              latitude,
+              longitude,
+              locationName,
+            });
+          } catch (error) {
+            console.error('Error fetching location name:', error);
+            // Fallback to coordinates only if reverse geocoding fails
+            resolve({
+              latitude,
+              longitude,
+              locationName: 'Unknown location',
+            });
+          }
         },
         (error) => reject(error),
         { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
@@ -83,23 +97,24 @@ export const UserLocationProvider = ({ children, user }) => {
     }
   }
 
-  const handleConfirmLocation = async () => {
+  const handleConfirmLocation = async (e) => {
     if (!preview) {
       alert('Please upload or capture a photo before verifying.');
       return;
     }
     try {
       const { guid: verificationScheduleGuid } = activeVerificationSchedule;
-      const coords = await getUserLocation();
+      const { latitude, longitude, locationName } = await getUserLocation();
       await verifyLocation({
-        entity: "agent",
+        entity: 'agent',
         guid: user?.agentGuid?.guid || user?.agentGuid?._id,
         data: {
-          latitude: coords.latitude,
-          longitude: coords.longitude,
+          latitude,
+          longitude,
           locationPhoto: locationPhotoUploadUrl,
           locationVerified: true,
           verificationScheduleGuid,
+          locationName,
         },
       }).unwrap();
       setUserDetails((prev) => ({
@@ -107,7 +122,7 @@ export const UserLocationProvider = ({ children, user }) => {
         agentGuid: {
           ...prev?.agentGuid,
           locationVerified: true,
-          homeLocation: coords,
+          homeLocation: { latitude, longitude, locationName },
         },
       }));
       closeScheduledPrompt();
