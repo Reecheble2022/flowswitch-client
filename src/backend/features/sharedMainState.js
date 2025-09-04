@@ -17,6 +17,7 @@ const fileuploadAdaptor = createEntityAdapter({ selectId: (data) => data._id || 
 const errorAdaptor = createEntityAdapter({ selectId: (data) => data.guid })
 const cashnoteverificationAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
 const agentverificationAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
+const agentverificationscheduleAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
 const voucherAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
 const floatwalletAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
 const agentmerchanttrustAdaptor = createEntityAdapter({ selectId: (data) => (data.guid || data._id) })
@@ -35,6 +36,7 @@ export const mainAdaptors = {
     fileupload: fileuploadAdaptor,
     cashnoteverification: cashnoteverificationAdaptor,
     agentverification: agentverificationAdaptor,
+    agentverificationschedule: agentverificationscheduleAdaptor,
     voucher: voucherAdaptor, 
     floatwallet: floatwalletAdaptor,
     agentmerchanttrust: agentmerchanttrustAdaptor,
@@ -55,6 +57,7 @@ export const mainInixoStates = {
     fileupload: fileuploadAdaptor.getInitialState(),
     cashnoteverification: cashnoteverificationAdaptor.getInitialState(),
     agentverification: agentverificationAdaptor.getInitialState(),
+    agentverificationschedule: agentverificationscheduleAdaptor.getInitialState(),
     voucher: voucherAdaptor.getInitialState(), 
     floatwallet: floatwalletAdaptor.getInitialState(),
     agentmerchanttrust: agentmerchanttrustAdaptor.getInitialState(),

@@ -40,12 +40,18 @@ export const AgentRegistrationProvider = ({ children }) => {
                 <AgentsRegistrationUpload />
               </div>
               
-              <div className="flex justify-start mt-4">
+              <div className="flex justify-between mt-4">
                 <button
                   onClick={handleCloseRegistration}
                   className="bg-gray-600 text-black px-4 py-2 rounded hover:bg-gray-700 border bg-white"
                 >
                   Cancel
+                </button>
+                <button
+                  onClick={handleCloseRegistration}
+                  className="bg-gray-600 text-black px-4 py-2 rounded hover:bg-gray-700 border bg-white"
+                >
+                  Done
                 </button>
               </div>
             </div>
