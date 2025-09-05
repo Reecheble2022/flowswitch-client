@@ -66,8 +66,10 @@ export const UserLocationProvider = ({ children, user }) => {
     return inputDate instanceof Date && !isNaN(inputDate) && inputDate <= today;
   };
   const openScheduledPrompt = (verificationSchedule) => {
-    setActiveVerificationSchedule(verificationSchedule);
-    setShowLocationPrompt(true);
+    if(verificationSchedule?.dueDate){
+      setActiveVerificationSchedule(verificationSchedule);
+      setShowLocationPrompt(true);
+    }
   }
   const closeScheduledPrompt = () => {
     setActiveVerificationSchedule({});
@@ -76,11 +78,11 @@ export const UserLocationProvider = ({ children, user }) => {
   const verficationsCount = (user?.agentGuid?.verifications || []).length;
   const verficationSchedulesDue = (user?.agentGuid?.verificationSchedules || []).filter(verificationSchedule => (!verificationSchedule.verified && isDateTodayOrEarlier(verificationSchedule.dueDate)));
   const verficationSchedulesCount = verficationSchedulesDue.length;
-  const requiredVerifications = 4
   useEffect(() => {
     if (!user || hasPrompted || !user?.agentGuid) return;
     const timer = setTimeout(() => {
-      if ((!user?.agentGuid?.locationVerified || (verficationsCount < requiredVerifications)) || verficationSchedulesCount) {
+      console.log()
+      if (verficationSchedulesCount) {
         openScheduledPrompt(verficationSchedulesDue[0]);
       }
     }, 1 * 60 * 100);
@@ -89,7 +91,7 @@ export const UserLocationProvider = ({ children, user }) => {
 
   const triggerHomeVerificationPrompt = () => {
     try {
-      if ((!user?.agentGuid?.locationVerified || (verficationsCount < requiredVerifications)) || verficationSchedulesCount) {
+      if (verficationSchedulesCount) {
         openScheduledPrompt(verficationSchedulesDue[0]);
       }
     }catch(err){
