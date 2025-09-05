@@ -42,7 +42,7 @@ const App = () => {
     },
     agentListTable: {
       key: "agentListTable",
-      visible: true,
+      visible: (user?.agentGuid? false : true),
       component: AgentList
     },
   });
