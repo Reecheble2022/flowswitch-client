@@ -194,7 +194,7 @@ export const UserLocationProvider = ({ children, user }) => {
             <img src={CompanyLogo} alt="Company Logo" className="mx-auto mb-4 h-16" />
             {!isStep2 ? (
               <>
-                <h2 className="text-3xl font-semibold mb-4"> <a href={user?.agentGuid?.merchantGuid?.website || "#"}>{user?.agentGuid?.merchantGuid?.name}</a> wants to know your home base </h2>
+                <h2 className="text-3xl font-semibold mb-4"> <a href={user?.agentGuid?.merchantGuid?.website || "#"}>{user?.agentGuid?.merchantGuid?.name || "FlowSwitch"}</a> wants to know your home base </h2>
                 <p className="text-gray-600 mb-4">Verify your home location</p>
                 <div className="w-full items-center text-center my-4">
                   <img src={locationPin} className="w-[100px] h-[100px] mx-auto" style={{ alignSelf: 'center' }} />
