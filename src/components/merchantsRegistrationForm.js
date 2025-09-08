@@ -199,7 +199,7 @@ const MerchantsRegistrationForm = () => {
     //============= /end submit to Cloud Run =================
 
     return (
-        <div className="max-w-lg p-6 bg-white rounded-lg shadow-lg">
+        <div className="w-full lg:max-w-lg p-6 bg-white rounded-lg shadow-lg">
             <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800"> Register new Merchant </h2>
             <div className="space-y-4">
                 <div>
