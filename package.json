@@ -2,7 +2,7 @@
   "name": "flowswitch",
   "version": "1.1.0",
   "private": true,
-  "homepage": "https://mahani-software.github.io/flowswitch-client",
+  "homepage": "https://www.flowswitchapi.com/",
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
     "ag-grid-react": "^34.1.0",
