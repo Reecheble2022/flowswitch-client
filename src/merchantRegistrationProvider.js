@@ -28,7 +28,7 @@ export const MerchantRegistrationProvider = ({ children }) => {
       {showRegistrationPrompt &&
         createPortal(
           <div className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50 p-4">
-            <div className="bg-white p-8 rounded-md shadow-lg max-w-[60%] w-full max-h-[90vh] overflow-y-auto relative bg-gradient-to-t from-lime-200">
+            <div className="bg-white p-8 rounded-md shadow-lg w-full md:max-w-[80%] lg:max-w-[60%] 3xl:max-w-[40%] max-h-[90vh] overflow-y-auto relative bg-gradient-to-t from-lime-200">
               <img src={CompanyLogo} alt="Company Logo" className="mx-auto mb-4 h-16" />
               <h2 className="text-3xl font-semibold mb-4 text-center">Merchant Signup</h2>
               <p className="text-gray-600 mb-4 text-center">

@@ -76,18 +76,29 @@ export const UserLocationProvider = ({ children, user }) => {
     setShowLocationPrompt(false);
   }
   const verficationsCount = (user?.agentGuid?.verifications || []).length;
+  console.log("===>>user?.agentGuid?.verificationSchedules =", user?.agentGuid?.verificationSchedules)
   const verficationSchedulesDue = (user?.agentGuid?.verificationSchedules || []).filter(verificationSchedule => (!verificationSchedule.verified && isDateTodayOrEarlier(verificationSchedule.dueDate)));
+  console.log("===>>verficationSchedulesDue =", verficationSchedulesDue)
   const verficationSchedulesCount = verficationSchedulesDue.length;
+  console.log("===>>verficationSchedulesCount =", verficationSchedulesCount)
+  const [previousVerficationSchedulesCount, setPreviousVerficationSchedulesCount] = useState(-1)
+  const [previousAgentGuid, setPreviousAgentGuid] = useState("xxxx")
   useEffect(() => {
-    if (!user || hasPrompted || !user?.agentGuid) return;
-    const timer = setTimeout(() => {
-      console.log()
-      if (verficationSchedulesCount) {
-        openScheduledPrompt(verficationSchedulesDue[0]);
+    if(verficationSchedulesCount && (previousVerficationSchedulesCount !== verficationSchedulesCount)){
+      if ((user?.agentGuid?._id || user?.agentGuid?.guid) && (previousAgentGuid !== (user?.agentGuid?._id || user?.agentGuid?.guid))) {
+        if (!user || hasPrompted || !user?.agentGuid) return;
+        const timer = setTimeout(() => {
+          console.log()
+          if (verficationSchedulesCount) {
+            openScheduledPrompt(verficationSchedulesDue[0]);
+          }
+        }, 1 * 60 * 100);
+        setPreviousAgentGuid(user?.agentGuid?.guid || user?.agentGuid?._id)
+        return () => clearTimeout(timer);
       }
-    }, 1 * 60 * 100);
-    return () => clearTimeout(timer);
-  }, [user, hasPrompted, verficationsCount]);
+      setPreviousVerficationSchedulesCount(verficationSchedulesCount)
+    }
+  }, [user, hasPrompted, verficationSchedulesCount]);
 
   const triggerHomeVerificationPrompt = () => {
     try {
