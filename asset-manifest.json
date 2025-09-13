@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/static/css/main.845b322a.css",
-    "main.js": "/static/js/main.dd668641.js",
+    "main.css": "/static/css/main.915e0432.css",
+    "main.js": "/static/js/main.59e09037.js",
     "static/js/488.f693805f.chunk.js": "/static/js/488.f693805f.chunk.js",
     "static/media/flowswitch-logo.png": "/static/media/flowswitch-logo.8f558f1cda61f48adfb4.png",
     "static/media/aever-full-logo.png": "/static/media/aever-full-logo.3e07e99fa4401b767c1e.png",
     "static/media/userRounded.png": "/static/media/userRounded.2c1a8d058011c6ba04ca.png",
     "static/media/flowswitch-homebase-prompt-icon-light.png": "/static/media/flowswitch-homebase-prompt-icon-light.979d6b3ab8aae04e9774.png",
     "index.html": "/index.html",
-    "main.845b322a.css.map": "/static/css/main.845b322a.css.map",
-    "main.dd668641.js.map": "/static/js/main.dd668641.js.map",
+    "main.915e0432.css.map": "/static/css/main.915e0432.css.map",
+    "main.59e09037.js.map": "/static/js/main.59e09037.js.map",
     "488.f693805f.chunk.js.map": "/static/js/488.f693805f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.845b322a.css",
-    "static/js/main.dd668641.js"
+    "static/css/main.915e0432.css",
+    "static/js/main.59e09037.js"
   ]
 }
