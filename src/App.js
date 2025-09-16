@@ -113,7 +113,7 @@ const App = () => {
               <div className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50">
                 <div className="bg-white p-8 rounded-md shadow-lg max-w-sm w-full relative text-center">
                   <img src={CompanyLogo} alt="Company Logo" className="mx-auto mb-4 h-16" />
-                  <h2 className="text-xl font-semibold mb-4"> Login to Continue </h2>
+                  <h2 className="text-xl font-semibold mb-4"> Merchant Authentication </h2>
 
                   {loginFailed && (
                     <div className="text-red-600 text-sm mb-4">
