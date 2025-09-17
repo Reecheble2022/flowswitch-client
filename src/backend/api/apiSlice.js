@@ -10,8 +10,8 @@ const activeCollectionAdapter = createEntityAdapter({ selectId: (data) => data.k
 
 const baseQuery = fetchBaseQuery({
     baseUrl: API_BASE_URL,
-    //credentials: "include",
-    credentials: "omit",
+    credentials: "include",
+    //credentials: "omit",
     prepareHeaders: (headers, { getState, endpoint }) => {
         // if user is authenticated, add auth token to request header
         const { va: accessToken } = getState().sharedstateslice?.active_collection?.entities?.access_token || {};
@@ -28,8 +28,8 @@ const baseQuery = fetchBaseQuery({
 // if token expires automatically refresh token
 const refreshQuery = fetchBaseQuery({
     baseUrl: API_BASE_URL,
-    //credentials: "include", // For web
-    credentials: "omit", // For mobile
+    credentials: "include", // For web
+    //credentials: "omit", // For mobile
     prepareHeaders: (headers, { getState, endpoint }) => {
         // if user is authenticated, add auth token to request header
         const { va: refreshToken } = getState().sharedstateslice?.active_collection?.entities?.refresh_token || {};
