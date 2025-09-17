@@ -94,6 +94,12 @@ const App = () => {
     }
   }, [loginSucceeded, loginSuccessResponse]);
 
+  useEffect(() => {
+    if (user && user?.agentGuid) {
+      window.location.href = 'https://agents.flowswitchapi.com';
+    }
+  }, [user]);
+
   const handleLogin = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -152,7 +158,10 @@ const App = () => {
             <Header showCard={showCard} hideCard={hideCard} visibleCards={visibleCards} />
             {user?.agentGuid ?
               <div className="flex bg-lime-100 w-full flex-grow">
-                {/* do nothing, agent should not see anything but just wait for their prompt(s) */}
+                {/* Redirecting non-admins to agents.flowswitchapi.com */}
+                <div className="flex-grow flex justify-center items-center">
+                  <p className="text-xl">Redirecting to FlowSwitch agents client...</p>
+                </div>
               </div>
               :user ?
               <div className="flex bg-lime-100 min-h-200 w-full flex-grow flex-col xl:flex-row">
