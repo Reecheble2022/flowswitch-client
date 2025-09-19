@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useItemsListReadrMutation } from '../backend/api/sharedCrud';
+import { useItemsListReadrMutation, useItemDetailsViewrMutation } from '../backend/api/sharedCrud';
 import { useNoteSnap } from '../noteSnapProvider';
 import { useUserLocation } from "../userLocationProvider";
 import { useAgentRegistration } from "../agentRegistrationProvider";
@@ -32,11 +32,15 @@ const VerificationsDashboard = ({ className }) => {
   const { scheduleAgentVerificationForOneAgent, scheduleAgentVerificationForAllAgents } = useAgentVerificationScheduling();
   const [activeTab, setActiveTab] = useState('location');
   const [selectedAgentToPrompt, setSelectedAgentToPrompt] = useState({});
+  const [expandedAgentId, setExpandedAgentId] = useState(null);
+  const [agentDetails, setAgentDetails] = useState({});
   
   const [fetchAgents, { data: agentsData, isLoading: agentsLoading }] = useItemsListReadrMutation();
   const { Data: agentList } = agentsData || {};
   const [fetchCashNotes, { data: cashNotesResponse, isLoading: cashNotesLoading }] = useItemsListReadrMutation();
   const { Data: cashNotesVerificationsList, totalPages, currentPage } = cashNotesResponse || {};
+  const [fetchAgentDetails, { data: singleAgentResponse, isLoading: agentDetailsLoading }] = useItemDetailsViewrMutation();
+  const { Data: singleAgentData } = singleAgentResponse || {};
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -59,6 +63,26 @@ const VerificationsDashboard = ({ className }) => {
     };
     fetchRecords();
   }, [fetchCashNotes]);
+
+  useEffect(() => {
+    if (singleAgentData) {
+      setAgentDetails(prev => ({
+        ...prev,
+        [singleAgentData.guid || singleAgentData._id]: singleAgentData
+      }));
+    }
+  }, [singleAgentData]);
+
+  const handleAgentClick = (agent) => {
+    setSelectedAgentToPrompt(agent);
+    const agentId = agent.guid || agent._id;
+    if (expandedAgentId === agentId) {
+      setExpandedAgentId(null); // Collapse if already expanded
+    } else {
+      setExpandedAgentId(agentId);
+      fetchAgentDetails({ entity: "agent", guid: agentId });
+    }
+  };
 
   return (
     <div className={`p-6 bg-gray-100 bg-white rounded-lg ${className}`}>
@@ -163,28 +187,54 @@ const VerificationsDashboard = ({ className }) => {
                   </tr>
                 ) : (
                   (agentList || []).map((agent) => (
-                      <tr key={agent?.guid || agent?._id} className={`${(selectedAgentToPrompt?.guid === agent?.guid) ? "bg-lime-50":""}`}
-                        onClick={() => {
-                          setSelectedAgentToPrompt(agent);
-                        }}
+                    <React.Fragment key={agent?.guid || agent?._id}>
+                      <tr 
+                        className={`${(selectedAgentToPrompt?.guid === agent?.guid) ? "bg-lime-50" : ""} cursor-pointer hover:bg-gray-100`} 
+                        onClick={() => handleAgentClick(agent)}
                       >
-                        <td className={`px-1 py-2 border-b text-sm text-gray-900`}>
+                        <td className={`px-1 py-2 border-t text-sm text-gray-900`}>
                           {agent.name || `${agent.firstName || ''} ${agent.lastName || ''}`.trim() || agent.ussdCode || 'Unknown'}
                         </td>
-                        <td className={`px-1 py-2 border-b text-sm text-gray-900`}>
+                        <td className={`px-1 py-2 border-t text-sm text-gray-900`}>
                           {(agent.verifications || []).map((v) => `[${v.latitude.toFixed(6)} : ${v.longitude.toFixed(6)}] - ${v.locationName || ""}`).join(', ') || '__'}
                         </td>
-                        <td className={`px-1 py-2 border-b text-sm text-gray-900`}>
+                        <td className={`px-1 py-2 border-t text-sm text-gray-900`}>
                           {(agent.verifications || []).map((v) => new Date(v.date || v.createdAt).toLocaleDateString()).join(', ') || '__'}
                         </td>
-                        <td className={`px-1 py-2 border-b text-sm text-gray-900`}>
+                        <td className={`px-1 py-2 border-t text-sm text-gray-900`}>
                           {(agent.verifications || []).length || 0}
                         </td>
-                        <td className={`px-1 py-2 border-b text-sm text-gray-900`}>
+                        <td className={`px-1 py-2 border-t text-sm text-gray-900`}>
                           {(agent.verificationSchedules || []).filter(vsch => !vsch.verified).length || 0}
                         </td>
                       </tr>
-                    ))
+                      {expandedAgentId === (agent.guid || agent._id) && (
+                        <tr>
+                          <td colSpan="5" className="px-1 py-2 bg-gray-50">
+                            {agentDetailsLoading && (
+                              <div className="flex justify-center items-center py-4">
+                                <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                              </div>
+                            )}
+                            {!agentDetailsLoading && agentDetails[agent.guid || agent._id] && (
+                              <div className="p-4">
+                                <h3 className="text-lg font-semibold text-gray-700">Agent Homebase Analysis ({agentDetails[agent.guid || agent._id].firstName} {agentDetails[agent.guid || agent._id].lastName})</h3>
+                                <div className="mt-2 text-sm text-gray-600">
+                                  <p className="mb-4"><strong>Background:</strong> {agentDetails[agent.guid || agent._id].locationAnalysis?.analysisBackground || 'N/A'}</p>
+
+                                  <p className="mb-4"><strong>Question:</strong> {agentDetails[agent.guid || agent._id].locationAnalysis?.question || 'N/A'}</p>
+                                  <p className="mb-4"><strong>AI Report:</strong> {agentDetails[agent.guid || agent._id].locationAnalysis?.aiReport || 'N/A'}</p>
+                                </div>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))
                 )}
               </tbody>
             </table>

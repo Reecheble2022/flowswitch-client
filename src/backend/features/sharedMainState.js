@@ -324,19 +324,20 @@ const mainSlice = createSlice({
                 })
             .addMatcher(
                 sharedCrudApi.endpoints.itemDetailsViewer.matchFulfilled,
-                (state, { payload: { entity, Data, applications, profiles, opportunities, messages } }) => {
+                (state, { payload: { entity, Data } }) => {
                     try {
                         mainAdaptors[entity].upsertOne(state[entity], Data);
-                        if (Array.isArray(applications) && applications.length) {
-                            const applicationsWithProfileImageAtRoot = applications.map(apcn => ({ ...apcn, profileImage: apcn.profileId?.profileImage }))
-                            mainAdaptors[entity].upsertMany(state["application"], applicationsWithProfileImageAtRoot);
-                        } else if (Array.isArray(profiles) && profiles.length) {
-                            mainAdaptors[entity].upsertMany(state["profile"], profiles);
-                        } else if (Array.isArray(opportunities) && opportunities.length) {
-                            mainAdaptors[entity].upsertMany(state["merchant"], opportunities);
-                        }
                     } catch (err) {
                         state.error = err || { message: "Unexpected error", code: "REDUX-addMatcher-itemDetailsViewer" };
+                    }
+                })
+            .addMatcher(
+                sharedCrudApi.endpoints.itemDetailsViewr.matchFulfilled,
+                (state, { payload: { entity, Data } }) => {
+                    try {
+                        mainAdaptors[entity].upsertOne(state[entity], Data);
+                    } catch (err) {
+                        state.error = err || { message: "Unexpected error", code: "REDUX-addMatcher-itemDetailsViewr" };
                     }
                 })
             .addMatcher(

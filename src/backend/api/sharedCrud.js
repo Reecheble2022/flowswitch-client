@@ -230,12 +230,24 @@ export const sharedCrudApi = appiiSlice.injectEndpoints({
         const { applications, profiles, opportunities, messages } = data || {}
         return {
           entity,
-          Data: data,
-          Message: msg,
-          applications,
-          profiles,
-          opportunities,
-          messages
+          Data: data
+        };
+      }
+    }),
+
+    //______________________________________________
+    itemDetailsViewr: builder.mutation({
+      query: ({ entity, guid }) => {
+        return ({
+          url: `/${entity}/${guid}`,
+          method: "GET",
+        })
+      },
+      transformResponse: ({ msg, data }, _, { entity }) => {
+        const { applications, profiles, opportunities, messages } = data || {}
+        return {
+          entity,
+          Data: data
         };
       }
     }),
@@ -421,6 +433,7 @@ export const {
   useListOptionsQuery,
   useListOptionzMutation,
   useItemDetailsViewerQuery,
+  useItemDetailsViewrMutation,
   useItemFieldsUpdaterMutation,
   useItemFieldPatcherMutation,
   useAddReactionMutation,
