@@ -81,7 +81,7 @@ export const AgentVerificationSchedulingProvider = ({ children, merchant }) => {
       {children}
       {showSchedulingModal && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50">
-          <div className="bg-white p-8 rounded-md shadow-lg max-w-[50%] w-full relative text-center">
+          <div className="bg-white p-8 rounded-md shadow-lg w-[96%] md:max-w-[80%] lg:max-w-[50%] relative text-center">
             <h2 className="text-3xl font-semibold mb-4"> Homebase verification for {target.type === 'one' ? `Agent: ${getAgentName(target.agent)}` : 'all agents'} </h2>
             
             <div className="flex justify-between mb-4">
