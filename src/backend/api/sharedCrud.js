@@ -237,14 +237,14 @@ export const sharedCrudApi = appiiSlice.injectEndpoints({
 
     //______________________________________________
     itemDetailsViewr: builder.mutation({
-      query: ({ entity, guid }) => {
+      query: ({ entity, guid, httpMethod, data }) => {
         return ({
           url: `/${entity}/${guid}`,
-          method: "GET",
+          method: httpMethod || "GET",
+          body: data
         })
       },
       transformResponse: ({ msg, data }, _, { entity }) => {
-        const { applications, profiles, opportunities, messages } = data || {}
         return {
           entity,
           Data: data
