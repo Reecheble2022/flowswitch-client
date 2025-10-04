@@ -14,6 +14,7 @@ export const NoteSnapProvider = ({ children, user }) => {
   const [agentUssdCode, setAgentUssdCode] = useState(''); // State for agent ID
   const [agentInputError, setAgentInputError] = useState(''); // State for input validation
   const [isAgentValidated, setIsAgentValidated] = useState(false); // Track if agent is validated
+  const [facingMode, setFacingMode] = useState('environment'); // NEW: Default to back camera
   const webcamRef = React.useRef(null);
 
   const [fetchAgentDetailsByCode, {
@@ -39,11 +40,10 @@ export const NoteSnapProvider = ({ children, user }) => {
   }] = useFileUploaderMutation();
   const { Data: { url: notePhotoUrl, serialNumber: cashNoteSerialNumber, denomination, currency } = {} } = uploadResponse || {};
 
-  console.log("iiiiiiiiiiiiiii-notePhotoUrl = ", notePhotoUrl);
-  console.log("iiiiiiiiiiiiiii-cashNoteSerialNumber = ", cashNoteSerialNumber);
-  console.log("iiiiiiiiiiiiiii-denomination = ", denomination);
-  console.log("iiiiiiiiiiiiiii-currency = ", currency);
-  console.log("iiiiiiiiiiiiiii-uploadResponse = ", uploadResponse);
+  // NEW: Function to toggle camera
+  const toggleCamera = () => {
+    setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
+  };
 
   // Function to validate agent ID via backend
   const validateAgent = async () => {
@@ -80,6 +80,7 @@ export const NoteSnapProvider = ({ children, user }) => {
     setAgentInputError('');
     setCurrentImage(null);
     setIsAgentValidated(false);
+    setFacingMode('environment'); // NEW: Reset to back camera on start
 
     if (providedAgentUssdCode && providedAgentUssdCode.length >= 1) {
       setAgentUssdCode(providedAgentUssdCode);
@@ -143,12 +144,6 @@ export const NoteSnapProvider = ({ children, user }) => {
       }
 
       const retrievedAgentDetails = (arrayWithSingleAgentRecord || [{}])[0];
-      console.log("_____________________________________________");
-      console.log(">>>>>>>retrievedAgentDetails = ", retrievedAgentDetails);
-      console.log(">>>>>>>cashNoteSerialNumber = ", cashNoteSerialNumber);
-      console.log(">>>>>>>user?.agentGuid = ", user?.agentGuid);
-      console.log(">ooooooooooooocashNoteSerialNumber, noteValue, notePhotoUrl, agentUssdCode = ", cashNoteSerialNumber, denomination, notePhotoUrl, agentUssdCode);
-
       setNotesToVerify((prev) => [...prev, {
         serialNumber: cashNoteSerialNumber,
         noteValue: denomination,
@@ -175,10 +170,7 @@ export const NoteSnapProvider = ({ children, user }) => {
         },
       }).unwrap();
 
-      console.log("====22");
       resetCurrentNote();
-      console.log("====33");
-      console.log("_______|_________________________________");
     } catch (err) {
       console.log("Error while uploading cash note file =", err);
       setAgentInputError(err?.data?.message || 'Failed to process cash note. Please try again.');
@@ -197,6 +189,7 @@ export const NoteSnapProvider = ({ children, user }) => {
     setAgentInputError('');
     setIsAgentValidated(false);
     setCurrentImage(null);
+    setFacingMode('environment'); // NEW: Reset to back camera
   };
 
   const handleCancel = () => {
@@ -207,6 +200,7 @@ export const NoteSnapProvider = ({ children, user }) => {
     setAgentInputError('');
     setIsAgentValidated(false);
     setCurrentImage(null);
+    setFacingMode('environment'); // NEW: Reset to back camera
   };
 
   // Convert base64 to Blob
@@ -277,10 +271,27 @@ export const NoteSnapProvider = ({ children, user }) => {
                 <p className="text-gray-600 mb-4">Paying agent ID: {agentUssdCode}</p>
                 {!currentImage ? (
                   <>
-                    <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="w-full max-h-48 object-cover rounded-xl" />
-                    <button onClick={captureNote} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-4">
-                      📸 Take {notesToVerify.length ? "another" : ""} picture of note
-                    </button>
+                    <Webcam
+                      audio={false}
+                      ref={webcamRef}
+                      screenshotFormat="image/jpeg"
+                      className="w-full max-h-48 object-cover rounded-xl"
+                      videoConstraints={{ facingMode }} // NEW: Dynamic facingMode
+                    />
+                    <div className="flex flex-col 3xl:flex-row gap-2 mt-4">
+                      <button
+                        onClick={captureNote}
+                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                      >
+                        📸 Take {notesToVerify.length ? "another" : ""} picture of note
+                      </button>
+                      <button
+                        onClick={toggleCamera}
+                        className="bg-blue-100 text-green-800 px-4 py-2 rounded hover:bg-blue-200"
+                      >
+                        🔄 Switch Camera
+                      </button>
+                    </div>
                     {notesToVerify.length > 0 && (
                       <div className="text-sm mt-2">
                         Last taken: (Serial-number = {notesToVerify[notesToVerify.length - 1].serialNumber}, Denomination = {notesToVerify[notesToVerify.length - 1].noteValue} - {notesToVerify[notesToVerify.length - 1].currency || 'Unknown'})
