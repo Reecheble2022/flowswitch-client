@@ -256,8 +256,6 @@ export const sharedCrudApi = appiiSlice.injectEndpoints({
     itemFieldsUpdater: builder.mutation({
       query: ({ entity, submissionEndpoint, data, guid }) => {
         const url = `/${submissionEndpoint || entity}/${guid}`
-        // console.log("oooooooooo-url = ", url)
-        // console.log("oooooooooo-data = ", data)
         return ({
           url,
           method: "PUT",

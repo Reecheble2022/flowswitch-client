@@ -25,7 +25,7 @@ export const NoteSnapProvider = ({ children, user }) => {
   }] = useItemsListReadrMutation();
   const { Data: arrayWithSingleAgentRecord } = agentDetailsResponse || {};
 
-  const [createNewCashNoteVerification, { 
+  const [createNewCashNoteVerification, {
     isLoading: newVerificationProcessing, 
     isError: logError, 
     error: logErrorDetails 
